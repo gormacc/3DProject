@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_3DProject"
         mc:Ignorable="d"
+        Loaded="MainWindow_OnLoaded"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <Image x:Name="FrontBuffer"/>
     </Grid>
 </Window>

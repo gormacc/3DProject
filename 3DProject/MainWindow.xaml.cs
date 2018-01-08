@@ -22,7 +22,14 @@ namespace _3DProject
     {
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();  
+        }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            WriteableBitmap bmp = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgra32, null);
+
+
         }
     }
 }
