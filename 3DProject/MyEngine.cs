@@ -55,5 +55,51 @@ namespace _3DProject
             _backBuffer[index + 2] = color.R;
             _backBuffer[index + 3] = color.A;
         }
+
+        //public Vector2 Project(Vector3 coord, Matrix transMat)
+        //{
+        //    // transforming the coordinates
+        //    var point = Vector3.TransformCoordinate(coord, transMat);
+        //    // The transformed coordinates will be based on coordinate system
+        //    // starting on the center of the screen. But drawing on screen normally starts
+        //    // from top left. We then need to transform them again to have x:0, y:0 on top left.
+        //    var x = point.X * bmp.PixelWidth + bmp.PixelWidth / 2.0f;
+        //    var y = -point.Y * bmp.PixelHeight + bmp.PixelHeight / 2.0f;
+        //    return (new Vector2(x, y));
+        //}
+
+        //// DrawPoint calls PutPixel but does the clipping operation before
+        //public void DrawPoint(Vector2 point)
+        //{
+        //    // Clipping what's visible on screen
+        //    if (point.X >= 0 && point.Y >= 0 && point.X < bmp.PixelWidth && point.Y < bmp.PixelHeight)
+        //    {
+        //        // Drawing a yellow point
+        //        PutPixel((int)point.X, (int)point.Y, new Color4(1.0f, 1.0f, 0.0f, 1.0f));
+        //    }
+        //}
+
+        public void Render(Camera camera, MyMesh[] meshes)
+        {
+            MyMatrix viewMatrix = MatrixCalculation.MyLookAtLH(camera.Position, camera.Target, new MyVector3(0, 1, 0));
+
+            MyMatrix projectionMatrix =
+                MatrixCalculation.MyPerspectiveForRH(0.78f, (float) _bitmap.PixelWidth / _bitmap.PixelHeight, 0.01f,
+                    1.0f);
+
+            foreach (var mesh in meshes)
+            {
+                MyMatrix worldMatrix =
+                    MatrixCalculation.MyRotationYawPitchRoll(mesh.Rotation.Y, mesh.Rotation.X, mesh.Rotation.Z);
+
+                worldMatrix =
+                    MatrixCalculation.Multiplication(worldMatrix, MatrixCalculation.MyTranslation(mesh.Position));
+
+                MyMatrix transformatioMatrix = MatrixCalculation.Multiplication(worldMatrix, viewMatrix);
+                transformatioMatrix = MatrixCalculation.Multiplication(transformatioMatrix, projectionMatrix);
+
+                
+            }
+        }
     }
 }
