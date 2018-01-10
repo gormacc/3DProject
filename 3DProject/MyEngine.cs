@@ -18,7 +18,7 @@ namespace _3DProject
         {
             _bitmap = bitmap;
 
-            _backBuffer = new byte[bitmap.PixelWidth * bitmap.PixelHeight * 4];
+            _backBuffer = new byte[bitmap.PixelWidth * bitmap.PixelHeight * bitmap.Format.BitsPerPixel/8];
         }
 
         public void Clear(byte r, byte g, byte b, byte a)
@@ -35,8 +35,8 @@ namespace _3DProject
 
         public void Present()
         {
-            _bitmap.WritePixels(new Int32Rect(0,0,_bitmap.PixelHeight, _bitmap.PixelHeight),
-                _backBuffer, _backBuffer.Length, 0);
+            _bitmap.WritePixels(new Int32Rect(0,0,_bitmap.PixelWidth, _bitmap.PixelHeight),
+                _backBuffer, _bitmap.PixelWidth * _bitmap.Format.BitsPerPixel/8, 0);
 
             _bitmap.Lock();
             _bitmap.AddDirtyRect(new Int32Rect(0, 0, _bitmap.PixelWidth, _bitmap.PixelHeight));
@@ -56,30 +56,33 @@ namespace _3DProject
             _backBuffer[index + 3] = color.A;
         }
 
-        //public Vector2 Project(Vector3 coord, Matrix transMat)
-        //{
-        //    // transforming the coordinates
-        //    var point = Vector3.TransformCoordinate(coord, transMat);
-        //    // The transformed coordinates will be based on coordinate system
-        //    // starting on the center of the screen. But drawing on screen normally starts
-        //    // from top left. We then need to transform them again to have x:0, y:0 on top left.
-        //    var x = point.X * bmp.PixelWidth + bmp.PixelWidth / 2.0f;
-        //    var y = -point.Y * bmp.PixelHeight + bmp.PixelHeight / 2.0f;
-        //    return (new Vector2(x, y));
-        //}
+        public MyVector2 Project(MyVector3 coord, MyMatrix transMat)
+        {
+            // transforming the coordinates
 
-        //// DrawPoint calls PutPixel but does the clipping operation before
-        //public void DrawPoint(Vector2 point)
-        //{
-        //    // Clipping what's visible on screen
-        //    if (point.X >= 0 && point.Y >= 0 && point.X < bmp.PixelWidth && point.Y < bmp.PixelHeight)
-        //    {
-        //        // Drawing a yellow point
-        //        PutPixel((int)point.X, (int)point.Y, new Color4(1.0f, 1.0f, 0.0f, 1.0f));
-        //    }
-        //}
+            MyVector4 vec = Vector3Calculation.MultiplyByMatrix(new MyVector4(coord), transMat);
 
-        public void Render(Camera camera, MyMesh[] meshes)
+            MyVector2 point = new MyVector2(vec.X, vec.Y); 
+            // The transformed coordinates will be based on coordinate system
+            // starting on the center of the screen. But drawing on screen normally starts
+            // from top left. We then need to transform them again to have x:0, y:0 on top left.
+            var x = point.X * _bitmap.PixelWidth + _bitmap.PixelWidth / 2.0f;
+            var y = -point.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
+            return (new MyVector2(x, y));
+        }
+
+        // DrawPoint calls PutPixel but does the clipping operation before
+        public void DrawPoint(MyVector2 point)
+        {
+            // Clipping what's visible on screen
+            if (point.X >= 0 && point.Y >= 0 && point.X < _bitmap.PixelWidth && point.Y < _bitmap.PixelHeight)
+            {
+                // Drawing a yellow point
+                PutPixel((int)point.X, (int)point.Y, Color.FromRgb(255, 0, 0));
+            }
+        }
+
+        public void Render(Camera camera, params MyMesh[] meshes)
         {
             MyMatrix viewMatrix = MatrixCalculation.MyLookAtLH(camera.Position, camera.Target, new MyVector3(0, 1, 0));
 
@@ -98,7 +101,13 @@ namespace _3DProject
                 MyMatrix transformatioMatrix = MatrixCalculation.Multiplication(worldMatrix, viewMatrix);
                 transformatioMatrix = MatrixCalculation.Multiplication(transformatioMatrix, projectionMatrix);
 
-                
+                foreach (var vertex in mesh.Vertexes)
+                {
+                    // First, we project the 3D coordinates into the 2D space
+                    var point = Project(vertex, transformatioMatrix);
+                    // Then we can draw on screen
+                    DrawPoint(point);
+                }
             }
         }
     }

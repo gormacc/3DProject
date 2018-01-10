@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace _3DProject
 {
@@ -36,6 +31,49 @@ namespace _3DProject
                 leftVector.Z * rightVector.X - leftVector.X * rightVector.Z,
                 leftVector.X * rightVector.Y - leftVector.Y * rightVector.X
             );
+        }
+
+        public static MyVector4 MultiplyByMatrix(MyVector4 vector, MyMatrix matrix)  //później przenieś todo
+        {
+            MyVector4 retVector = new MyVector4();
+
+            double sum = 0;
+
+            sum += matrix[0, 0] * vector.X;
+            sum += matrix[0, 1] * vector.Y;
+            sum += matrix[0, 2] * vector.Z;
+            sum += matrix[0, 3] * vector.W;
+
+            retVector.X = sum;
+
+            sum = 0;
+
+            sum += matrix[1, 0] * vector.X;
+            sum += matrix[1, 1] * vector.Y;
+            sum += matrix[1, 2] * vector.Z;
+            sum += matrix[1, 3] * vector.W;
+
+            retVector.Y = sum;
+
+            sum = 0;
+
+            sum += matrix[2, 0] * vector.X;
+            sum += matrix[2, 1] * vector.Y;
+            sum += matrix[2, 2] * vector.Z;
+            sum += matrix[2, 3] * vector.W;
+
+            retVector.Z = sum;
+
+            sum = 0;
+
+            sum += matrix[3, 0] * vector.X;
+            sum += matrix[3, 1] * vector.Y;
+            sum += matrix[3, 2] * vector.Z;
+            sum += matrix[3, 3] * vector.W;
+
+            retVector.W = sum;
+
+            return retVector;
         }
 
 

@@ -10,8 +10,8 @@ namespace _3DProject
     {
         public string Name { get; set; }
         public MyVector3[] Vertexes { get; }
-        public MyVector3 Position { get; set; }
-        public MyVector3 Rotation { get; set; }
+        public MyVector3 Position { get; set; } = new MyVector3();
+        public MyVector3 Rotation { get; set; } = new MyVector3();
 
         public MyMesh(string name, int vertexesCount)
         {

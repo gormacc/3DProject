@@ -142,14 +142,14 @@ namespace _3DProject
             return new MyMatrix
             {
                 [0, 0] = 1.0,
-                [0, 3] = vector.X,
 
                 [1, 1] = 1.0,
-                [1, 3] = vector.Y,
-
+                
                 [2, 2] = 1.0,
-                [2, 3] = vector.Z,
 
+                [3, 0] = vector.X,
+                [3, 1] = vector.Y,
+                [3, 2] = vector.Z,
                 [3, 3] = 1.0
             };
         }
