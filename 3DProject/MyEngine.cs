@@ -60,7 +60,7 @@ namespace _3DProject
         {
             // transforming the coordinates
 
-            MyVector4 vec = Vector3Calculation.MultiplyByMatrix(new MyVector4(coord), transMat);
+            MyVector3 vec = Vector3Calculation.MyTransformCoordinate(coord, transMat);
 
             MyVector2 point = new MyVector2(vec.X, vec.Y); 
             // The transformed coordinates will be based on coordinate system
