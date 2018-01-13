@@ -10,12 +10,14 @@ namespace _3DProject
     {
         public string Name { get; set; }
         public MyVector3[] Vertexes { get; }
+        public MyFace[] Faces { get; set; }
         public MyVector3 Position { get; set; } = new MyVector3();
         public MyVector3 Rotation { get; set; } = new MyVector3();
 
-        public MyMesh(string name, int vertexesCount)
+        public MyMesh(string name, int vertexesCount, int facesCount)
         {
             Vertexes = new MyVector3[vertexesCount];
+            Faces = new MyFace[facesCount];
             Name = name;
         }
     }
