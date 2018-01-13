@@ -78,7 +78,7 @@ namespace _3DProject
             if (point.X >= 0 && point.Y >= 0 && point.X < _bitmap.PixelWidth && point.Y < _bitmap.PixelHeight)
             {
                 // Drawing a yellow point
-                PutPixel((int)point.X, (int)point.Y, Color.FromRgb(255, 0, 0));
+                PutPixel((int)point.X, (int)point.Y, Color.FromRgb(255, 255, 0));
             }
         }
 

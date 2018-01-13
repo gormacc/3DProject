@@ -31,7 +31,7 @@ namespace _3DProject
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            WriteableBitmap bmp = new WriteableBitmap(640, 480, 96, 96, PixelFormats.Bgra32, null);
+            WriteableBitmap bmp = new WriteableBitmap(320, 240, 60, 80, PixelFormats.Bgra32, null);
 
             engine = new MyEngine(bmp);
 
