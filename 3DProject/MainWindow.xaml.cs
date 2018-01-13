@@ -73,7 +73,7 @@ namespace _3DProject
             engine.Clear(0, 0, 0, 255);
 
             // rotating slightly the cube during each frame rendered
-            mesh.Rotation = new MyVector3(mesh.Rotation.X + 0.01f, mesh.Rotation.Y, mesh.Rotation.Z);
+            mesh.Rotation = new MyVector3(mesh.Rotation.X + 0.01f, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
 
             // Doing the various matrix operations
             engine.Render(mera, mesh);

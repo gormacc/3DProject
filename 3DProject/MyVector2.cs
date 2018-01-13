@@ -2,16 +2,16 @@
 {
     public class MyVector2
     {
-        public double X { get; set; } = 0.0;
+        public float X { get; set; } = 0.0f;
 
-        public double Y { get; set; } = 0.0;
+        public float Y { get; set; } = 0.0f;
 
         public MyVector2()
         {
 
         }
 
-        public MyVector2(double x, double y)
+        public MyVector2(float x, float y)
         {
             X = x;
             Y = y;

@@ -15,11 +15,11 @@ namespace _3DProject
 
         public static MyVector3 Normalize(MyVector3 vector)
         {
-            double divisor = Math.Sqrt((vector.X * vector.X) + (vector.Y * vector.Y) + (vector.Z * vector.Z));
+            float divisor = (float)Math.Sqrt((vector.X * vector.X) + (vector.Y * vector.Y) + (vector.Z * vector.Z));
             return new MyVector3(vector.X / divisor, vector.Y / divisor, vector.Z / divisor);
         }
 
-        public static double DotProduct(MyVector3 leftVector , MyVector3 rightVector)
+        public static float DotProduct(MyVector3 leftVector , MyVector3 rightVector)
         {
             return (leftVector.X * rightVector.X) + (leftVector.Y * rightVector.Y) + (leftVector.Z * rightVector.Z);
         }
@@ -37,7 +37,7 @@ namespace _3DProject
         {
             MyVector4 retVector = new MyVector4();
 
-            double sum = 0;
+            float sum = 0;
 
             sum += matrix[0, 0] * vector.X;
             sum += matrix[1, 0] * vector.Y;

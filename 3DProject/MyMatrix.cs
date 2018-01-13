@@ -2,7 +2,7 @@
 {
     public class MyMatrix
     {
-        private double[,] _values = new double[4,4];
+        private float[,] _values = new float[4,4];
 
         public MyMatrix()
         {
@@ -10,18 +10,18 @@
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    _values[i, j] = 0.0;
+                    _values[i, j] = 0.0f;
                 }
             }
         }
 
-        public double this[int key, int key2]
+        public float this[int key, int key2]
         {
             get
             {
                 if (key < 0 || key2 < 0 || key >= 4 || key2 >= 4)
                 {
-                    return 0.0;
+                    return 0.0f;
                 }
                 return _values[key, key2];
             }

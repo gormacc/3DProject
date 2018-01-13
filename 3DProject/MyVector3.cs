@@ -8,18 +8,18 @@ namespace _3DProject
 {
     public class MyVector3
     {
-        public double X { get; set; } = 0.0;
+        public float X { get; set; } = 0.0f;
 
-        public double Y { get; set; } = 0.0;
+        public float Y { get; set; } = 0.0f;
 
-        public double Z { get; set; } = 0.0;
+        public float Z { get; set; } = 0.0f;
 
         public MyVector3()
         {
             
         }
 
-        public MyVector3(double x, double y, double z)
+        public MyVector3(float x, float y, float z)
         {
             X = x;
             Y = y;

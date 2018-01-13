@@ -12,7 +12,7 @@ namespace _3DProject
     public class MyEngine
     {
         private byte[] _backBuffer;
-        private readonly double[] depthBuffer;
+        private readonly float[] depthBuffer;
         private WriteableBitmap _bitmap;
         private readonly int renderWidth;
         private readonly int renderHeight;
@@ -25,7 +25,7 @@ namespace _3DProject
 
 
             _backBuffer = new byte[bitmap.PixelWidth * bitmap.PixelHeight * 4];
-            depthBuffer = new double[bitmap.PixelWidth * bitmap.PixelHeight];
+            depthBuffer = new float[bitmap.PixelWidth * bitmap.PixelHeight];
         }
 
         public void Clear(byte r, byte g, byte b, byte a)
@@ -55,7 +55,7 @@ namespace _3DProject
             _bitmap.Unlock();
         }
 
-        public void PutPixel(int x, int y, double z, Color color)
+        public void PutPixel(int x, int y, float z, Color color)
         {
             // As we have a 1-D Array for our back buffer
             // we need to know the equivalent cell in 1-D based
@@ -111,8 +111,8 @@ namespace _3DProject
             int ex = (int)Interpolate(pc.X, pd.X, gradient2);
 
             // starting Z & ending Z
-            double z1 = Interpolate(pa.Z, pb.Z, gradient1);
-            double z2 = Interpolate(pc.Z, pd.Z, gradient2);
+            float z1 = Interpolate(pa.Z, pb.Z, gradient1);
+            float z2 = Interpolate(pc.Z, pd.Z, gradient2);
 
             // drawing a line from left (sx) to right (ex) 
             for (var x = sx; x < ex; x++)
@@ -124,7 +124,7 @@ namespace _3DProject
             }
         }
 
-        private double Clamp(double value, double min = 0, double max = 1)
+        private float Clamp(float value, float min = 0, float max = 1)
         {
             return Math.Max(min, Math.Min(value, max));
         }
@@ -132,7 +132,7 @@ namespace _3DProject
         // Interpolating the value between 2 vertices 
         // min is the starting point, max the ending point
         // and gradient the % between the 2 points
-        private double Interpolate(double min, double max, double gradient)
+        private float Interpolate(float min, float max, float gradient)
         {
             return min + (max - min) * Clamp(gradient);
         }
@@ -164,9 +164,8 @@ namespace _3DProject
             }
 
             // computing lines' directions
-            double dP1P2, dP1P3;
+            float dP1P2, dP1P3;
 
-            // http://en.wikipedia.org/wiki/Slope
             // Computing slopes
             if (p2.Y - p1.Y > 0)
                 dP1P2 = (p2.X - p1.X) / (p2.Y - p1.Y);
@@ -245,7 +244,7 @@ namespace _3DProject
 
         //    while (true)
         //    {
-        //        DrawPoint(new MyVector2(x0, y0));
+        //        DrawPoint(new MyVector3(x0, y0), );
 
         //        if ((x0 == x1) && (y0 == y1)) break;
         //        var e2 = 2 * err;
@@ -259,8 +258,8 @@ namespace _3DProject
             MyMatrix viewMatrix = MatrixCalculation.MyLookAtLH(camera.Position, camera.Target, new MyVector3(0, 1, 0));
 
             MyMatrix projectionMatrix =
-                MatrixCalculation.MyPerspectiveForRH(0.78f, (float) _bitmap.PixelWidth / _bitmap.PixelHeight, 0.1f,
-                    0.2f);
+                MatrixCalculation.MyPerspectiveForRH(0.78f, (float) _bitmap.PixelWidth / _bitmap.PixelHeight, 0.01f,
+                    1.0f);
 
             foreach (var mesh in meshes)
             {
@@ -285,9 +284,11 @@ namespace _3DProject
                     var pixelB = Project(vertexB, transformatioMatrix);
                     var pixelC = Project(vertexC, transformatioMatrix);
 
-                    var color = 0.25f + (faceIndex % mesh.Faces.Length) * 0.75f / mesh.Faces.Length;
-                    byte col = (byte)(color * 255);
-                    DrawTriangle(pixelA, pixelB, pixelC, Color.FromRgb(col, col, col));
+                    var val = faceIndex * 11;
+                    byte valByte = (byte)val;
+
+                    var color = Color.FromArgb(255, valByte,valByte , valByte);
+                    DrawTriangle(pixelA, pixelB, pixelC, color);
                     faceIndex++;
                 }
             }

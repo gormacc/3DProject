@@ -16,7 +16,7 @@ namespace _3DProject
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    double sum = 0.0;
+                    float sum = 0.0f;
 
                     for (int k = 0; k < 4; k++)
                     {
@@ -56,7 +56,7 @@ namespace _3DProject
                 [3, 0] = -Vector3Calculation.DotProduct(xaxis, cameraPosition),
                 [3, 1] = -Vector3Calculation.DotProduct(yaxis, cameraPosition),
                 [3, 2] = -Vector3Calculation.DotProduct(zaxis, cameraPosition),
-                [3, 3] = 1.0
+                [3, 3] = 1.0f
             };
 
         }
@@ -64,10 +64,10 @@ namespace _3DProject
         public static MyMatrix MyPerspectiveForRH(float fieldOfViewY, float aspectRatio, float znearPlane,
             float zfarPlane)
         {
-            double val = fieldOfViewY / 2;
-            double h = Math.Cos(val) / Math.Sin(val);
+            float val = fieldOfViewY / 2;
+            float h = (float)(Math.Cos(val) / Math.Sin(val));
 
-            double w = h / aspectRatio;
+            float w = h / aspectRatio;
 
             return new MyMatrix
             {
@@ -82,20 +82,20 @@ namespace _3DProject
             };
         }
 
-        public static MyMatrix MyRotationYawPitchRoll(double yaw, double pitch, double roll)
+        public static MyMatrix MyRotationYawPitchRoll(float yaw, float pitch, float roll)
         {
-            double cosa = Math.Cos(pitch);
-            double sina = Math.Sin(pitch);
+            float cosa = (float)Math.Cos(pitch);
+            float sina = (float)Math.Sin(pitch);
 
-            double cosb = Math.Cos(yaw);
-            double sinb = Math.Sin(yaw);
+            float cosb = (float)Math.Cos(yaw);
+            float sinb = (float)Math.Sin(yaw);
 
-            double cosy = Math.Cos(roll);
-            double siny = Math.Sin(roll);
+            float cosy = (float)Math.Cos(roll);
+            float siny = (float)Math.Sin(roll);
 
             MyMatrix rotX = new MyMatrix
             {
-                [0, 0] = 1.0,
+                [0, 0] = 1.0f,
 
                 [1, 1] = cosa,
                 [1, 2] = sina,
@@ -103,7 +103,7 @@ namespace _3DProject
                 [2, 1] = -sina,
                 [2, 2] = cosa,
 
-                [3, 3] = 1.0
+                [3, 3] = 1.0f
             };
 
             MyMatrix rotY = new MyMatrix
@@ -111,12 +111,12 @@ namespace _3DProject
                 [0, 0] = cosb,
                 [0, 2] = -sinb,
 
-                [1, 1] = 1.0,
+                [1, 1] = 1.0f,
 
                 [2, 0] = sinb,
                 [2, 2] = cosb,
 
-                [3, 3] = 1.0
+                [3, 3] = 1.0f
             };
 
             MyMatrix rotZ = new MyMatrix
@@ -127,9 +127,9 @@ namespace _3DProject
                 [1, 0] = -siny,
                 [1, 1] = cosy,
 
-                [2, 2] = 1.0,
+                [2, 2] = 1.0f,
 
-                [3, 3] = 1.0
+                [3, 3] = 1.0f
             };
 
             MyMatrix resultMatrix = Multiplication(rotZ, rotX);
@@ -141,16 +141,16 @@ namespace _3DProject
         {
             return new MyMatrix
             {
-                [0, 0] = 1.0,
+                [0, 0] = 1.0f,
 
-                [1, 1] = 1.0,
+                [1, 1] = 1.0f,
                 
-                [2, 2] = 1.0,
+                [2, 2] = 1.0f,
 
                 [3, 0] = vector.X,
                 [3, 1] = vector.Y,
                 [3, 2] = vector.Z,
-                [3, 3] = 1.0
+                [3, 3] = 1.0f
             };
         }
     }
