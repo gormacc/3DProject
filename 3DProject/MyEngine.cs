@@ -79,12 +79,11 @@ namespace _3DProject
 
             MyVector3 vec = Vector3Calculation.MyTransformCoordinate(coord, transMat);
 
-            MyVector2 point = new MyVector2(vec.X, vec.Y); 
             // The transformed coordinates will be based on coordinate system
             // starting on the center of the screen. But drawing on screen normally starts
             // from top left. We then need to transform them again to have x:0, y:0 on top left.
-            var x = point.X * _bitmap.PixelWidth + _bitmap.PixelWidth / 2.0f;
-            var y = -point.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
+            var x = vec.X * _bitmap.PixelWidth + _bitmap.PixelWidth / 2.0f;
+            var y = -vec.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
             return (new MyVector3(x, y, vec.Z));
         }
 
@@ -284,11 +283,7 @@ namespace _3DProject
                     var pixelB = Project(vertexB, transformatioMatrix);
                     var pixelC = Project(vertexC, transformatioMatrix);
 
-                    var val = faceIndex * 11;
-                    byte valByte = (byte)val;
-
-                    var color = Color.FromArgb(255, valByte,valByte , valByte);
-                    DrawTriangle(pixelA, pixelB, pixelC, color);
+                    DrawTriangle(pixelA, pixelB, pixelC, mesh.Colors[faceIndex]);
                     faceIndex++;
                 }
             }
