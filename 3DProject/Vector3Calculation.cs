@@ -80,9 +80,7 @@ namespace _3DProject
         {
             MyVector4 vector4 = MultiplyVectorByMatrix(new MyVector4(vec), matrix);
 
-            MyVector3 vector3 = new MyVector3(vector4.X / vector4.W, vector4.Y / vector4.W, vector4.Z / vector4.W);
-
-            return Normalize(vector3);
+            return new MyVector3(vector4.X / vector4.W, vector4.Y / vector4.W, vector4.Z / vector4.W);
 
         }
 
