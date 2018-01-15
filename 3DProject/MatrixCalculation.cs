@@ -98,9 +98,9 @@ namespace _3DProject
                 [0, 0] = 1.0f,
 
                 [1, 1] = cosa,
-                [1, 2] = -sina,
+                [1, 2] = sina,
 
-                [2, 1] = sina,
+                [2, 1] = -sina,
                 [2, 2] = cosa,
 
                 [3, 3] = 1.0f
@@ -109,11 +109,11 @@ namespace _3DProject
             MyMatrix rotY = new MyMatrix
             {
                 [0, 0] = cosb,
-                [0, 2] = sinb,
+                [0, 2] = -sinb,
 
                 [1, 1] = 1.0f,
 
-                [2, 0] = -sinb,
+                [2, 0] = sinb,
                 [2, 2] = cosb,
 
                 [3, 3] = 1.0f
@@ -122,9 +122,9 @@ namespace _3DProject
             MyMatrix rotZ = new MyMatrix
             {
                 [0, 0] = cosy,
-                [0, 1] = -siny,
+                [0, 1] = siny,
 
-                [1, 0] = siny,
+                [1, 0] = -siny,
                 [1, 1] = cosy,
 
                 [2, 2] = 1.0f,

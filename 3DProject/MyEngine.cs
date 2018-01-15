@@ -20,8 +20,8 @@ namespace _3DProject
         public MyEngine(WriteableBitmap bitmap)
         {
             _bitmap = bitmap;
-            renderWidth = (int)bitmap.Width;
-            renderHeight = (int)bitmap.Height;
+            renderWidth = bitmap.PixelWidth;
+            renderHeight = bitmap.PixelHeight;
 
 
             _backBuffer = new byte[bitmap.PixelWidth * bitmap.PixelHeight * 4];
@@ -48,7 +48,7 @@ namespace _3DProject
         public void Present()
         {
             _bitmap.WritePixels(new Int32Rect(0,0,_bitmap.PixelWidth, _bitmap.PixelHeight),
-                _backBuffer, _bitmap.PixelWidth * _bitmap.Format.BitsPerPixel/8, 0);
+                _backBuffer, _bitmap.PixelWidth * 4, 0);
 
             _bitmap.Lock();
             _bitmap.AddDirtyRect(new Int32Rect(0, 0, _bitmap.PixelWidth, _bitmap.PixelHeight));
@@ -63,7 +63,10 @@ namespace _3DProject
             var index = (x + y * _bitmap.PixelWidth);
             var index4 = index * 4;
 
-            if (depthBuffer[index] < z) return;
+            if (depthBuffer[index] < z)
+            {
+                return;
+            }
 
             depthBuffer[index] = z;
 
@@ -84,7 +87,7 @@ namespace _3DProject
             // from top left. We then need to transform them again to have x:0, y:0 on top left.
             var x = vec.X * _bitmap.PixelWidth + _bitmap.PixelWidth / 2.0f;
             var y = -vec.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
-            return (new MyVector3(x, y, vec.Z));
+            return new MyVector3(x, y, vec.Z);
         }
 
         // DrawPoint calls PutPixel but does the clipping operation before
@@ -283,7 +286,9 @@ namespace _3DProject
                     var pixelB = Project(vertexB, transformatioMatrix);
                     var pixelC = Project(vertexC, transformatioMatrix);
 
-                    DrawTriangle(pixelA, pixelB, pixelC, mesh.Colors[faceIndex]);
+                    var col = 0.25f + (faceIndex % mesh.Faces.Length) * 0.75f / mesh.Faces.Length;
+                    byte color = (byte) (col * 255);
+                    DrawTriangle(pixelA, pixelB, pixelC, Color.FromRgb(color, color, color));
                     faceIndex++;
                 }
             }
