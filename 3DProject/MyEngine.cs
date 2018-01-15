@@ -86,7 +86,7 @@ namespace _3DProject
             // starting on the center of the screen. But drawing on screen normally starts
             // from top left. We then need to transform them again to have x:0, y:0 on top left.
             var x = vec.X * _bitmap.PixelWidth + _bitmap.PixelWidth / 2.0f;
-            var y = -vec.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
+            var y = vec.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
             return new MyVector3(x, y, vec.Z);
         }
 
