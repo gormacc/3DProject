@@ -2,20 +2,20 @@
 {
     public class MyVector4
     {
-        public double X { get; set; } = 0.0;
+        public float X { get; set; } = 0.0f;
 
-        public double Y { get; set; } = 0.0;
+        public float Y { get; set; } = 0.0f;
 
-        public double Z { get; set; } = 0.0;
+        public float Z { get; set; } = 0.0f;
 
-        public double W { get; set; } = 0.0;
+        public float W { get; set; } = 0.0f;
 
         public MyVector4()
         {
 
         }
 
-        public MyVector4(double x, double y, double z, double w = 1.0)
+        public MyVector4(float x, float y, float z, float w = 1.0f)
         {
             X = x;
             Y = y;
@@ -28,7 +28,7 @@
             X = vector3.X;
             Y = vector3.Y;
             Z = vector3.Z;
-            W = 1.0;
+            W = 1.0f;
         }
     }
 }

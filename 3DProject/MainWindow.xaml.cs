@@ -26,7 +26,7 @@ namespace _3DProject
         }
 
         private MyEngine engine;
-        MyMesh mesh = new MyMesh("Cube", 8);
+        private MyMesh[] meshes;
         Camera mera = new Camera();
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -38,14 +38,7 @@ namespace _3DProject
             // Our XAML Image control
             FrontBuffer.Source = bmp;
 
-            mesh.Vertexes[0] = new MyVector3(-1, 1, 1);
-            mesh.Vertexes[1] = new MyVector3(1, 1, 1);
-            mesh.Vertexes[2] = new MyVector3(-1, -1, 1);
-            mesh.Vertexes[3] = new MyVector3(-1, -1, -1);
-            mesh.Vertexes[4] = new MyVector3(-1, 1, -1);
-            mesh.Vertexes[5] = new MyVector3(1, 1, -1);
-            mesh.Vertexes[6] = new MyVector3(1, -1, 1);
-            mesh.Vertexes[7] = new MyVector3(1, -1, -1);
+            meshes = ObjectLoader.LoadJSONFile("monkey.babylon");
 
             mera.Position = new MyVector3(0, 0, 10.0f);
             mera.Target = new MyVector3();
@@ -58,11 +51,15 @@ namespace _3DProject
         {
             engine.Clear(0, 0, 0, 255);
 
-            // rotating slightly the cube during each frame rendered
-            mesh.Rotation = new MyVector3(mesh.Rotation.X + 0.01f, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
+            foreach (var mesh in meshes)
+            {
+                // rotating slightly the cube during each frame rendered
+                mesh.Rotation = new MyVector3(mesh.Rotation.X, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
+            }
+            
 
             // Doing the various matrix operations
-            engine.Render(mera, mesh);
+            engine.Render(mera, meshes);
             // Flushing the back buffer into the front buffer
             engine.Present();
         }
