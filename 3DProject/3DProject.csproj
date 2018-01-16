@@ -62,7 +62,9 @@
     <Compile Include="MyFace.cs" />
     <Compile Include="MyVector2.cs" />
     <Compile Include="MyVector4.cs" />
+    <Compile Include="MyVertex.cs" />
     <Compile Include="ObjectLoader.cs" />
+    <Compile Include="ScanLineData.cs" />
     <Compile Include="Vector3Calculation.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

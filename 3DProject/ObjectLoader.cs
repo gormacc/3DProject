@@ -58,7 +58,16 @@ namespace _3DProject
                     var x = (float)verticesArray[index * verticesStep].Value;
                     var y = (float)verticesArray[index * verticesStep + 1].Value;
                     var z = (float)verticesArray[index * verticesStep + 2].Value;
-                    mesh.Vertexes[index] = new MyVector3(x, y, z);
+
+                    //obliczanie normalnej samodzielne todo
+                    var nx = (float)verticesArray[index * verticesStep + 3].Value;
+                    var ny = (float)verticesArray[index * verticesStep + 4].Value;
+                    var nz = (float)verticesArray[index * verticesStep + 5].Value;
+                    mesh.Vertexes[index] = new MyVertex
+                    {
+                        Coordinates = new MyVector3(x, y, z),
+                        Normal = new MyVector3(nx, ny, nz)
+                    };
                 }
 
                 // Then filling the Faces array
