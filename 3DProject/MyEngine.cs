@@ -17,6 +17,8 @@ namespace _3DProject
         private readonly int renderWidth;
         private readonly int renderHeight;
 
+        private MyVector3 _lightPosition = new MyVector3(0.0f, -10.0f, 0.0f);
+
         public MyEngine(WriteableBitmap bitmap)
         {
             _bitmap = bitmap;
@@ -76,18 +78,27 @@ namespace _3DProject
             _backBuffer[index4 + 3] = color.A;
         }
 
-        public MyVector3 Project(MyVector3 coord, MyMatrix transMat)
+        public MyVertex Project(MyVertex vertex, MyMatrix transMat, MyMatrix worldMatrix)
         {
             // transforming the coordinates
 
-            MyVector3 vec = Vector3Calculation.MyTransformCoordinate(coord, transMat);
+            MyVector3 coordinates = Vector3Calculation.MyTransformCoordinate(vertex.Coordinates, transMat);
+
+            MyVector3 point3dWorld = Vector3Calculation.MyTransformCoordinate(vertex.Coordinates, worldMatrix);
+            MyVector3 normal3dWorld = Vector3Calculation.MyTransformCoordinate(vertex.Normal, worldMatrix);
 
             // The transformed coordinates will be based on coordinate system
             // starting on the center of the screen. But drawing on screen normally starts
             // from top left. We then need to transform them again to have x:0, y:0 on top left.
-            var x = vec.X * _bitmap.PixelWidth + _bitmap.PixelWidth / 2.0f;
-            var y = vec.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
-            return new MyVector3(x, y, vec.Z);
+            var x = coordinates.X * _bitmap.PixelWidth + _bitmap.PixelWidth / 2.0f;
+            var y = coordinates.Y * _bitmap.PixelHeight + _bitmap.PixelHeight / 2.0f;
+
+            return new MyVertex
+            {
+              Coordinates = new MyVector3(x, y, coordinates.Z),
+              Normal = normal3dWorld,
+              WorldCoordinates = point3dWorld
+            };
         }
 
         // DrawPoint calls PutPixel but does the clipping operation before
@@ -101,13 +112,13 @@ namespace _3DProject
             }
         }
 
-        void ProcessScanLine(int y, MyVector3 pa, MyVector3 pb, MyVector3 pc, MyVector3 pd, Color color)
+        void ProcessScanLine(ScanLineData data, MyVector3 pa, MyVector3 pb, MyVector3 pc, MyVector3 pd, Color color)
         {
             // Thanks to current Y, we can compute the gradient to compute others values like
             // the starting X (sx) and ending X (ex) to draw between
             // if pa.Y == pb.Y or pc.Y == pd.Y, gradient is forced to 1
-            var gradient1 = pa.Y != pb.Y ? (y - pa.Y) / (pb.Y - pa.Y) : 1;
-            var gradient2 = pc.Y != pd.Y ? (y - pc.Y) / (pd.Y - pc.Y) : 1;
+            var gradient1 = pa.Y != pb.Y ? (data.CurrentY - pa.Y) / (pb.Y - pa.Y) : 1;
+            var gradient2 = pc.Y != pd.Y ? (data.CurrentY - pc.Y) / (pd.Y - pc.Y) : 1;
 
             int sx = (int)Interpolate(pa.X, pb.X, gradient1);
             int ex = (int)Interpolate(pc.X, pd.X, gradient2);
@@ -116,13 +127,17 @@ namespace _3DProject
             float z1 = Interpolate(pa.Z, pb.Z, gradient1);
             float z2 = Interpolate(pc.Z, pd.Z, gradient2);
 
+            var snl = Interpolate(data.Ndotla, data.Ndotlb, gradient1);
+            var enl = Interpolate(data.Ndotlc, data.Ndotld, gradient2);
+
             // drawing a line from left (sx) to right (ex) 
             for (var x = sx; x < ex; x++)
             {
                 float gradient = (x - sx) / (float)(ex - sx);
-
                 var z = Interpolate(z1, z2, gradient);
-                DrawPoint(new MyVector3(x, y, z), color);
+                var ndotl = Interpolate(snl, enl, gradient);
+
+                DrawPoint(new MyVector3(x, data.CurrentY, z), color * ndotl);
             }
         }
 
@@ -139,31 +154,44 @@ namespace _3DProject
             return min + (max - min) * Clamp(gradient);
         }
 
-        public void DrawTriangle(MyVector3 p1, MyVector3 p2, MyVector3 p3, Color color)
+        public void DrawTriangle(MyVertex v1, MyVertex v2, MyVertex v3, Color color)
         {
             // Sorting the points in order to always have this order on screen p1, p2 & p3
             // with p1 always up (thus having the Y the lowest possible to be near the top screen)
             // then p2 between p1 & p3
-            if (p1.Y > p2.Y)
+            if (v1.Coordinates.Y > v2.Coordinates.Y)
             {
-                var temp = p2;
-                p2 = p1;
-                p1 = temp;
+                var temp = v2;
+                v2 = v1;
+                v1 = temp;
             }
 
-            if (p2.Y > p3.Y)
+            if (v2.Coordinates.Y > v3.Coordinates.Y)
             {
-                var temp = p2;
-                p2 = p3;
-                p3 = temp;
+                var temp = v2;
+                v2 = v3;
+                v3 = temp;
             }
 
-            if (p1.Y > p2.Y)
+            if (v1.Coordinates.Y > v2.Coordinates.Y)
             {
-                var temp = p2;
-                p2 = p1;
-                p1 = temp;
+                var temp = v2;
+                v2 = v1;
+                v1 = temp;
             }
+
+            MyVector3 p1 = v1.Coordinates;
+            MyVector3 p2 = v2.Coordinates;
+            MyVector3 p3 = v3.Coordinates;
+
+            // computing the cos of the angle between the light vector and the normal vector
+            // it will return a value between 0 and 1 that will be used as the intensity of the color
+            float nl1 = ComputeNDotL(v1.WorldCoordinates, v1.Normal);
+            float nl2 = ComputeNDotL(v2.WorldCoordinates, v2.Normal);
+            float nl3 = ComputeNDotL(v3.WorldCoordinates, v3.Normal);
+
+            var data = new ScanLineData { };
+
 
             // computing lines' directions
             float dP1P2, dP1P3;
@@ -194,13 +222,23 @@ namespace _3DProject
             {
                 for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
                 {
+                    data.CurrentY = y;
+
                     if (y < p2.Y)
                     {
-                        ProcessScanLine(y, p1, p3, p1, p2, color);
+                        data.Ndotla = nl1;
+                        data.Ndotlb = nl3;
+                        data.Ndotlc = nl1;
+                        data.Ndotld = nl2;
+                        ProcessScanLine(data, v1.Coordinates, v3.Coordinates, v1.Coordinates, v2.Coordinates, color);
                     }
                     else
                     {
-                        ProcessScanLine(y, p1, p3, p2, p3, color);
+                        data.Ndotla = nl1;
+                        data.Ndotlb = nl3;
+                        data.Ndotlc = nl2;
+                        data.Ndotld = nl3;
+                        ProcessScanLine(data, v1.Coordinates, v3.Coordinates, v2.Coordinates, v3.Coordinates, color);
                     }
                 }
             }
@@ -219,16 +257,36 @@ namespace _3DProject
             {
                 for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
                 {
+                    data.CurrentY = y;
+
                     if (y < p2.Y)
                     {
-                        ProcessScanLine(y, p1, p2, p1, p3, color);
+                        data.Ndotla = nl1;
+                        data.Ndotlb = nl2;
+                        data.Ndotlc = nl1;
+                        data.Ndotld = nl3;
+                        ProcessScanLine(data, v1.Coordinates, v2.Coordinates, v1.Coordinates, v3.Coordinates, color);
                     }
                     else
                     {
-                        ProcessScanLine(y, p2, p3, p1, p3, color);
+                        data.Ndotla = nl2;
+                        data.Ndotlb = nl3;
+                        data.Ndotlc = nl1;
+                        data.Ndotld = nl3;
+                        ProcessScanLine(data, v2.Coordinates, v3.Coordinates, v1.Coordinates, v3.Coordinates, color);
                     }
                 }
             }
+        }
+
+        float ComputeNDotL(MyVector3 vertex, MyVector3 normal)
+        {
+            var lightDirection = Vector3Calculation.Substitution(_lightPosition, vertex); //lightPosition - vertex;
+
+            normal = Vector3Calculation.Normalize(normal);
+            lightDirection = Vector3Calculation.Normalize(lightDirection); 
+
+            return Math.Max(0, Vector3Calculation.DotProduct(normal, lightDirection));
         }
 
         //public void DrawBline(MyVector2 point0, MyVector2 point1)
@@ -282,13 +340,11 @@ namespace _3DProject
                     var vertexB = mesh.Vertexes[face.B];
                     var vertexC = mesh.Vertexes[face.C];
 
-                    var pixelA = Project(vertexA, transformatioMatrix);
-                    var pixelB = Project(vertexB, transformatioMatrix);
-                    var pixelC = Project(vertexC, transformatioMatrix);
+                    var pixelA = Project(vertexA, transformatioMatrix, worldMatrix);
+                    var pixelB = Project(vertexB, transformatioMatrix, worldMatrix);
+                    var pixelC = Project(vertexC, transformatioMatrix, worldMatrix);
 
-                    var col = 0.25f + (faceIndex % mesh.Faces.Length) * 0.75f / mesh.Faces.Length;
-                    byte color = (byte) (col * 255);
-                    DrawTriangle(pixelA, pixelB, pixelC, Color.FromRgb(color, color, color));
+                    DrawTriangle(pixelA, pixelB, pixelC, Color.FromRgb(0, 0, 0));
                     faceIndex++;
                 }
             }

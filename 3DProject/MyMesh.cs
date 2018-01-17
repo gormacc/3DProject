@@ -10,7 +10,7 @@ namespace _3DProject
     public class MyMesh
     {
         public string Name { get; set; }
-        public MyVector3[] Vertexes { get; }
+        public MyVertex[] Vertexes { get; }
         public MyFace[] Faces { get; set; }
         public MyVector3 Position { get; set; } = new MyVector3();
         public MyVector3 Rotation { get; set; } = new MyVector3();
@@ -18,7 +18,7 @@ namespace _3DProject
 
         public MyMesh(string name, int vertexesCount, int facesCount)
         {
-            Vertexes = new MyVector3[vertexesCount];
+            Vertexes = new MyVertex[vertexesCount];
             Faces = new MyFace[facesCount];
             Name = name;
 
