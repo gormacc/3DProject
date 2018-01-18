@@ -1,8 +1,9 @@
 ﻿using System;
+using _3DProject.Matrix;
 
-namespace _3DProject
+namespace _3DProject.Vector
 {
-    public static class Vector3Calculation
+    public static class VectorCalculation
     {
         public static MyVector3 Substitution(MyVector3 leftVector, MyVector3 rightVector)
         {
@@ -33,7 +34,7 @@ namespace _3DProject
             );
         }
 
-        public static MyVector4 MultiplyVectorByMatrix(MyVector4 vector, MyMatrix matrix)  //później przenieś todo
+        public static MyVector4 MultiplyVectorByMatrix(MyVector4 vector, MyMatrix matrix) 
         {
             MyVector4 retVector = new MyVector4();
 
@@ -81,7 +82,6 @@ namespace _3DProject
             MyVector4 vector4 = MultiplyVectorByMatrix(new MyVector4(vec), matrix);
 
             return new MyVector3(vector4.X / vector4.W, vector4.Y / vector4.W, vector4.Z / vector4.W);
-
         }
 
 

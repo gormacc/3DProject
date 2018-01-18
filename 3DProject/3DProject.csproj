@@ -59,13 +59,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MyFace.cs" />
-    <Compile Include="MyVector2.cs" />
-    <Compile Include="MyVector4.cs" />
-    <Compile Include="MyVertex.cs" />
-    <Compile Include="ObjectLoader.cs" />
+    <Compile Include="3DObject\MyFace.cs" />
+    <Compile Include="Vector\MyVector2.cs" />
+    <Compile Include="Vector\MyVector4.cs" />
+    <Compile Include="3DObject\MyVertex.cs" />
+    <Compile Include="3DObject\ObjectLoader.cs" />
     <Compile Include="ScanLineData.cs" />
-    <Compile Include="Vector3Calculation.cs" />
+    <Compile Include="Vector\Vector3Calculation.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -81,11 +81,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MatrixCalculation.cs" />
+    <Compile Include="Matrix\MatrixCalculation.cs" />
     <Compile Include="MyEngine.cs" />
-    <Compile Include="MyMatrix.cs" />
-    <Compile Include="MyMesh.cs" />
-    <Compile Include="MyVector3.cs" />
+    <Compile Include="Matrix\MyMatrix.cs" />
+    <Compile Include="3DObject\MyMesh.cs" />
+    <Compile Include="Vector\MyVector3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -116,6 +116,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
