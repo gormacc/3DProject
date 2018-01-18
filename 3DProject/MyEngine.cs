@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -12,6 +13,7 @@ namespace _3DProject
     {
         private byte[] backBuffer;
         private readonly float[] depthBuffer;
+        private object[] lockBuffer;
         private WriteableBitmap bitmap;
         private readonly int renderWidth;
         private readonly int renderHeight;
@@ -34,6 +36,11 @@ namespace _3DProject
 
             backBuffer = new byte[renderLength * 4];
             depthBuffer = new float[renderLength];
+            lockBuffer = new object[renderLength];
+            for (int i = 0; i < lockBuffer.Length; i++)
+            {
+                lockBuffer[i] = new object();
+            }
         }
 
         public void ClearBitmap()
@@ -65,11 +72,14 @@ namespace _3DProject
             var index = (x + y * renderWidth);
             var backBufferIndex = index * 4;
 
-            if (depthBuffer[index] < z) return;
+            lock (lockBuffer[index])
+            {
+                if (depthBuffer[index] < z) return;
 
-            depthBuffer[index] = z;
+                depthBuffer[index] = z;
 
-            SetColorOfPixel(color, backBufferIndex);
+                SetColorOfPixel(color, backBufferIndex);
+            }
         }
 
         private void SetColorOfPixel(Color color, int index)
@@ -252,7 +262,7 @@ namespace _3DProject
                 MatrixCalculation.MyPerspectiveForRH(0.78f, (float) bitmap.PixelWidth / bitmap.PixelHeight, 0.01f,
                     1.0f);
 
-            foreach (var mesh in meshes)
+            Parallel.ForEach(meshes, mesh =>
             {
                 worldMatrix =
                     MatrixCalculation.MyRotationYawPitchRoll(mesh.Rotation.Y, mesh.Rotation.X, mesh.Rotation.Z);
@@ -263,7 +273,7 @@ namespace _3DProject
                 transformationMatrix = MatrixCalculation.Multiplication(worldMatrix, viewMatrix);
                 transformationMatrix = MatrixCalculation.Multiplication(transformationMatrix, projectionMatrix);
 
-                foreach (var face in mesh.Faces)
+                Parallel.ForEach(mesh.Faces, face =>
                 {
                     var vertexA = mesh.Vertexes[face.A];
                     var vertexB = mesh.Vertexes[face.B];
@@ -274,8 +284,8 @@ namespace _3DProject
                     vertexC = PrepareVertex(vertexC);
 
                     DrawTriangle(vertexA, vertexB, vertexC, mesh.MeshColor);
-                }
-            }
+                });
+            });
         }
     }
 }
