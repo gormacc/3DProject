@@ -1,4 +1,6 @@
-﻿namespace _3DProject
+﻿using _3DProject.Vector;
+
+namespace _3DProject._3DObject
 {
     public class MyVertex
     {

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using _3DProject.Vector;
 
-namespace _3DProject
+namespace _3DProject.Matrix
 {
     public static class MatrixCalculation
     {
@@ -33,11 +30,11 @@ namespace _3DProject
         public static MyMatrix MyLookAtLH(MyVector3 cameraPosition, MyVector3 cameraTarget, MyVector3 upVector)
         {
             MyVector3 zaxis =
-                Vector3Calculation.Normalize(Vector3Calculation.Substitution(cameraTarget, cameraPosition));
+                VectorCalculation.Normalize(VectorCalculation.Substitution(cameraTarget, cameraPosition));
 
-            MyVector3 xaxis = Vector3Calculation.Normalize(Vector3Calculation.CrossProduct(upVector, zaxis));
+            MyVector3 xaxis = VectorCalculation.Normalize(VectorCalculation.CrossProduct(upVector, zaxis));
 
-            MyVector3 yaxis = Vector3Calculation.CrossProduct(zaxis, xaxis);
+            MyVector3 yaxis = VectorCalculation.CrossProduct(zaxis, xaxis);
 
             return new MyMatrix
             {
@@ -53,9 +50,9 @@ namespace _3DProject
                 [2, 1] = yaxis.Z,
                 [2, 2] = zaxis.Z,
 
-                [3, 0] = -Vector3Calculation.DotProduct(xaxis, cameraPosition),
-                [3, 1] = -Vector3Calculation.DotProduct(yaxis, cameraPosition),
-                [3, 2] = -Vector3Calculation.DotProduct(zaxis, cameraPosition),
+                [3, 0] = -VectorCalculation.DotProduct(xaxis, cameraPosition),
+                [3, 1] = -VectorCalculation.DotProduct(yaxis, cameraPosition),
+                [3, 2] = -VectorCalculation.DotProduct(zaxis, cameraPosition),
                 [3, 3] = 1.0f
             };
 

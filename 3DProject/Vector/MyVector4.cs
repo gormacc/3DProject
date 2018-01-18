@@ -1,4 +1,6 @@
-﻿namespace _3DProject
+﻿using _3DProject.Vector;
+
+namespace _3DProject
 {
     public class MyVector4
     {
@@ -8,7 +10,7 @@
 
         public float Z { get; set; } = 0.0f;
 
-        public float W { get; set; } = 0.0f;
+        public float W { get; set; } = 1.0f;
 
         public MyVector4()
         {

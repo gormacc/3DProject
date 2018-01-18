@@ -1,8 +1,8 @@
-﻿namespace _3DProject
+﻿namespace _3DProject.Matrix
 {
     public class MyMatrix
     {
-        private float[,] _values = new float[4,4];
+        private float[,] values = new float[4,4];
 
         public MyMatrix()
         {
@@ -10,7 +10,7 @@
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    _values[i, j] = 0.0f;
+                    values[i, j] = 0.0f;
                 }
             }
         }
@@ -23,14 +23,14 @@
                 {
                     return 0.0f;
                 }
-                return _values[key, key2];
+                return values[key, key2];
             }
 
             set
             {
                 if (key >= 0 && key2 >= 0 && key < 4 && key2 < 4)
                 {
-                    _values[key, key2] = value;
+                    values[key, key2] = value;
                 }
             }
         }
