@@ -1,4 +1,4 @@
-﻿namespace _3DProject
+﻿namespace _3DProject.Vector
 {
     public class MyVector2
     {
