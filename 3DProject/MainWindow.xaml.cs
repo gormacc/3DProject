@@ -19,10 +19,11 @@ namespace _3DProject
         private MyEngine engine;
         private MyMesh[] meshes;
         Camera mera = new Camera();
+        private MyVector3[] lights;
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            WriteableBitmap bmp = new WriteableBitmap(320, 240, 60, 80, PixelFormats.Bgra32, null);
+            var bmp = new WriteableBitmap(320, 240, 60, 80, PixelFormats.Bgra32, null);
 
             engine = new MyEngine(bmp);
 
@@ -38,6 +39,13 @@ namespace _3DProject
             mera.Position = new MyVector3(0, 0, 10.0f);
             mera.Target = new MyVector3();
 
+            lights = new[]
+            {
+                new MyVector3(0.0f, 10.0f, -5.0f),
+                new MyVector3(0.0f, -10.0f, -5.0f) 
+            };
+
+
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
@@ -50,7 +58,7 @@ namespace _3DProject
                 mesh.Rotation = new MyVector3(mesh.Rotation.X, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
             }
             
-            engine.PrepareFrame(mera, meshes);
+            engine.PrepareFrame(mera, lights, meshes);
             engine.ActualizeBitmap();
         }
     }

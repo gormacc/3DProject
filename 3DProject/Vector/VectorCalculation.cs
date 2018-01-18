@@ -16,7 +16,7 @@ namespace _3DProject.Vector
 
         public static MyVector3 Normalize(MyVector3 vector)
         {
-            float divisor = (float)Math.Sqrt((vector.X * vector.X) + (vector.Y * vector.Y) + (vector.Z * vector.Z));
+            var divisor = (float)Math.Sqrt((vector.X * vector.X) + (vector.Y * vector.Y) + (vector.Z * vector.Z));
             return new MyVector3(vector.X / divisor, vector.Y / divisor, vector.Z / divisor);
         }
 
@@ -36,9 +36,9 @@ namespace _3DProject.Vector
 
         public static MyVector4 MultiplyVectorByMatrix(MyVector4 vector, MyMatrix matrix) 
         {
-            MyVector4 retVector = new MyVector4();
+            var retVector = new MyVector4();
 
-            float sum = 0;
+            var sum = 0.0f;
 
             sum += matrix[0, 0] * vector.X;
             sum += matrix[1, 0] * vector.Y;
@@ -47,7 +47,7 @@ namespace _3DProject.Vector
 
             retVector.X = sum;
 
-            sum = 0;
+            sum = 0.0f;
 
             sum += matrix[0, 1] * vector.X;
             sum += matrix[1, 1] * vector.Y;
@@ -56,7 +56,7 @@ namespace _3DProject.Vector
 
             retVector.Y = sum;
 
-            sum = 0;
+            sum = 0.0f;
 
             sum += matrix[0, 2] * vector.X;
             sum += matrix[1, 2] * vector.Y;
@@ -65,7 +65,7 @@ namespace _3DProject.Vector
 
             retVector.Z = sum;
 
-            sum = 0;
+            sum = 0.0f;
 
             sum += matrix[0, 3] * vector.X;
             sum += matrix[1, 3] * vector.Y;
@@ -79,7 +79,7 @@ namespace _3DProject.Vector
 
         public static MyVector3 MyTransformCoordinate(MyVector3 vec, MyMatrix matrix)
         {
-            MyVector4 vector4 = MultiplyVectorByMatrix(new MyVector4(vec), matrix);
+            var vector4 = MultiplyVectorByMatrix(new MyVector4(vec), matrix);
 
             return new MyVector3(vector4.X / vector4.W, vector4.Y / vector4.W, vector4.Z / vector4.W);
         }
