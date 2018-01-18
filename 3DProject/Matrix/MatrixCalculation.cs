@@ -7,15 +7,15 @@ namespace _3DProject.Matrix
     {
         public static MyMatrix Multiplication(MyMatrix leftMatrix, MyMatrix rightMatrix)
         {
-            MyMatrix resultMatrix = new MyMatrix();
+            var resultMatrix = new MyMatrix();
 
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (var j = 0; j < 4; j++)
                 {
-                    float sum = 0.0f;
+                    var sum = 0.0f;
 
-                    for (int k = 0; k < 4; k++)
+                    for (var k = 0; k < 4; k++)
                     {
                         sum += leftMatrix[i, k] * rightMatrix[k, j];
                     }
@@ -29,12 +29,12 @@ namespace _3DProject.Matrix
 
         public static MyMatrix MyLookAtLH(MyVector3 cameraPosition, MyVector3 cameraTarget, MyVector3 upVector)
         {
-            MyVector3 zaxis =
+            var zaxis =
                 VectorCalculation.Normalize(VectorCalculation.Substitution(cameraTarget, cameraPosition));
 
-            MyVector3 xaxis = VectorCalculation.Normalize(VectorCalculation.CrossProduct(upVector, zaxis));
+            var xaxis = VectorCalculation.Normalize(VectorCalculation.CrossProduct(upVector, zaxis));
 
-            MyVector3 yaxis = VectorCalculation.CrossProduct(zaxis, xaxis);
+            var yaxis = VectorCalculation.CrossProduct(zaxis, xaxis);
 
             return new MyMatrix
             {
@@ -61,10 +61,10 @@ namespace _3DProject.Matrix
         public static MyMatrix MyPerspectiveForRH(float fieldOfViewY, float aspectRatio, float znearPlane,
             float zfarPlane)
         {
-            float val = fieldOfViewY / 2;
-            float h = (float)(Math.Cos(val) / Math.Sin(val));
+            var val = fieldOfViewY / 2;
+            var h = (float)(Math.Cos(val) / Math.Sin(val));
 
-            float w = h / aspectRatio;
+            var w = h / aspectRatio;
 
             return new MyMatrix
             {
@@ -81,16 +81,16 @@ namespace _3DProject.Matrix
 
         public static MyMatrix MyRotationYawPitchRoll(float yaw, float pitch, float roll)
         {
-            float cosa = (float)Math.Cos(pitch);
-            float sina = (float)Math.Sin(pitch);
+            var cosa = (float)Math.Cos(pitch);
+            var sina = (float)Math.Sin(pitch);
 
-            float cosb = (float)Math.Cos(yaw);
-            float sinb = (float)Math.Sin(yaw);
+            var cosb = (float)Math.Cos(yaw);
+            var sinb = (float)Math.Sin(yaw);
 
-            float cosy = (float)Math.Cos(roll);
-            float siny = (float)Math.Sin(roll);
+            var cosy = (float)Math.Cos(roll);
+            var siny = (float)Math.Sin(roll);
 
-            MyMatrix rotX = new MyMatrix
+            var rotX = new MyMatrix
             {
                 [0, 0] = 1.0f,
 
@@ -103,7 +103,7 @@ namespace _3DProject.Matrix
                 [3, 3] = 1.0f
             };
 
-            MyMatrix rotY = new MyMatrix
+            var rotY = new MyMatrix
             {
                 [0, 0] = cosb,
                 [0, 2] = sinb,
@@ -116,7 +116,7 @@ namespace _3DProject.Matrix
                 [3, 3] = 1.0f
             };
 
-            MyMatrix rotZ = new MyMatrix
+            var rotZ = new MyMatrix
             {
                 [0, 0] = cosy,
                 [0, 1] = -siny,
@@ -129,7 +129,7 @@ namespace _3DProject.Matrix
                 [3, 3] = 1.0f
             };
 
-            MyMatrix resultMatrix = Multiplication(rotZ, rotX);
+            var resultMatrix = Multiplication(rotZ, rotX);
             resultMatrix = Multiplication(resultMatrix, rotY);
             return resultMatrix;
         }

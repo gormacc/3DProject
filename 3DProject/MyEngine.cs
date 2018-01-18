@@ -19,12 +19,13 @@ namespace _3DProject
         private readonly int renderHeight;
         private readonly int renderLength;
 
-        private MyVector3 lightPosition = new MyVector3(0.0f, 10.0f, -5.0f);
+        private MyVector3[] allLights = {new MyVector3(0.0f, 10.0f, -5.0f)};
 
         private MyMatrix transformationMatrix = new MyMatrix();
         private MyMatrix viewMatrix = new MyMatrix();
         private MyMatrix worldMatrix = new MyMatrix();
         private MyMatrix projectionMatrix = new MyMatrix();
+
 
 
         public MyEngine(WriteableBitmap bitmap)
@@ -37,7 +38,7 @@ namespace _3DProject
             backBuffer = new byte[renderLength * 4];
             depthBuffer = new float[renderLength];
             lockBuffer = new object[renderLength];
-            for (int i = 0; i < lockBuffer.Length; i++)
+            for (var i = 0; i < lockBuffer.Length; i++)
             {
                 lockBuffer[i] = new object();
             }
@@ -50,7 +51,7 @@ namespace _3DProject
                 SetColorOfPixel(Color.FromRgb(0,0,0), index);
             }
 
-            for(int i = 0; i < depthBuffer.Length; i++)
+            for(var i = 0; i < depthBuffer.Length; i++)
             {
                 depthBuffer[i] = float.MaxValue;
             }
@@ -75,9 +76,7 @@ namespace _3DProject
             lock (lockBuffer[index])
             {
                 if (depthBuffer[index] < z) return;
-
                 depthBuffer[index] = z;
-
                 SetColorOfPixel(color, backBufferIndex);
             }
         }
@@ -92,7 +91,7 @@ namespace _3DProject
 
         public MyVertex PrepareVertex(MyVertex vertex)
         {
-            MyVector3 coordinates = VectorCalculation.MyTransformCoordinate(vertex.Coordinates, transformationMatrix);
+            var coordinates = VectorCalculation.MyTransformCoordinate(vertex.Coordinates, transformationMatrix);
             var x = coordinates.X * renderWidth + renderWidth / 2.0f;
             var y = coordinates.Y * renderHeight + renderHeight / 2.0f;
 
@@ -117,18 +116,18 @@ namespace _3DProject
             var gradient1 = pa.Y != pb.Y ? (data.CurrentY - pa.Y) / (pb.Y - pa.Y) : 1;
             var gradient2 = pc.Y != pd.Y ? (data.CurrentY - pc.Y) / (pd.Y - pc.Y) : 1;
 
-            int sx = (int)Interpolate(pa.X, pb.X, gradient1);
-            int ex = (int)Interpolate(pc.X, pd.X, gradient2);
+            var sx = (int)Interpolate(pa.X, pb.X, gradient1);
+            var ex = (int)Interpolate(pc.X, pd.X, gradient2);
 
-            float z1 = Interpolate(pa.Z, pb.Z, gradient1);
-            float z2 = Interpolate(pc.Z, pd.Z, gradient2);
+            var z1 = Interpolate(pa.Z, pb.Z, gradient1);
+            var z2 = Interpolate(pc.Z, pd.Z, gradient2);
 
             var snl = Interpolate(data.Ndotla, data.Ndotlb, gradient1);
             var enl = Interpolate(data.Ndotlc, data.Ndotld, gradient2);
 
             for (var x = sx; x < ex; x++)
             {
-                float gradient = (x - sx) / (float)(ex - sx);
+                var gradient = (x - sx) / (float)(ex - sx);
                 var z = Interpolate(z1, z2, gradient);
                 var ndotl = Interpolate(snl, enl, gradient);
 
@@ -136,12 +135,12 @@ namespace _3DProject
             }
         }
 
-        private float Clamp(float value, float min = 0, float max = 1)
+        private static float Clamp(float value, float min = 0, float max = 1)
         {
             return Math.Max(min, Math.Min(value, max));
         }
 
-        private float Interpolate(float min, float max, float gradient)
+        private static float Interpolate(float min, float max, float gradient)
         {
             return min + (max - min) * Clamp(gradient);
         }
@@ -169,15 +168,15 @@ namespace _3DProject
                 v1 = temp;
             }
 
-            MyVector3 p1 = v1.Coordinates;
-            MyVector3 p2 = v2.Coordinates;
-            MyVector3 p3 = v3.Coordinates;
+            var p1 = v1.Coordinates;
+            var p2 = v2.Coordinates;
+            var p3 = v3.Coordinates;
 
-            float nl1 = ComputeNDotL(v1.WorldCoordinates, v1.Normal);
-            float nl2 = ComputeNDotL(v2.WorldCoordinates, v2.Normal);
-            float nl3 = ComputeNDotL(v3.WorldCoordinates, v3.Normal);
+            var nl1 = CalculateShade(v1.WorldCoordinates, v1.Normal);
+            var nl2 = CalculateShade(v2.WorldCoordinates, v2.Normal);
+            var nl3 = CalculateShade(v3.WorldCoordinates, v3.Normal);
 
-            var data = new ScanLineData { };
+            var data = new ScanLineData();
 
 
             float dP1P2, dP1P3;
@@ -242,17 +241,26 @@ namespace _3DProject
             }
         }
 
-        float ComputeNDotL(MyVector3 vertex, MyVector3 normal)
+        float CalculateShade(MyVector3 vertex, MyVector3 normal)
         {
-            var lightDirection = VectorCalculation.Substitution(lightPosition, vertex);
             normal = VectorCalculation.Normalize(normal);
-            lightDirection = VectorCalculation.Normalize(lightDirection); 
-            return Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
+            var sumDotProduct = 0.0f;
+
+            foreach(var light in allLights)
+            {
+                var lightDirection = VectorCalculation.Substitution(light, vertex);
+                lightDirection = VectorCalculation.Normalize(lightDirection);
+                sumDotProduct += Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
+            }
+
+            return sumDotProduct;
         }
 
 
-        public void PrepareFrame(Camera camera, params MyMesh[] meshes)
+        public void PrepareFrame(Camera camera, MyVector3[] lights , MyMesh[] meshes)
         {
+            allLights = lights;
+
             viewMatrix = MatrixCalculation.MyLookAtLH(camera.Position, camera.Target, new MyVector3(0, 1, 0));
 
             projectionMatrix =

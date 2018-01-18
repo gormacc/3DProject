@@ -65,7 +65,7 @@
     <Compile Include="3DObject\MyVertex.cs" />
     <Compile Include="3DObject\ObjectLoader.cs" />
     <Compile Include="ScanLineData.cs" />
-    <Compile Include="Vector\Vector3Calculation.cs" />
+    <Compile Include="Vector\VectorCalculation.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
