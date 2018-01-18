@@ -17,7 +17,7 @@ namespace _3DProject
         private readonly int renderWidth;
         private readonly int renderHeight;
 
-        private MyVector3 _lightPosition = new MyVector3(0.0f, -10.0f, 0.0f);
+        private MyVector3 _lightPosition = new MyVector3(0.0f, 10.0f, -5.0f);
 
         public MyEngine(WriteableBitmap bitmap)
         {
@@ -137,7 +137,7 @@ namespace _3DProject
                 var z = Interpolate(z1, z2, gradient);
                 var ndotl = Interpolate(snl, enl, gradient);
 
-                DrawPoint(new MyVector3(x, data.CurrentY, z), color * ndotl);
+                DrawPoint(new MyVector3(x, data.CurrentY, z), Color.FromArgb(255, (byte)(color.R * ndotl), (byte)(color.G * ndotl), (byte)(color.B * ndotl)));
             }
         }
 
@@ -344,7 +344,7 @@ namespace _3DProject
                     var pixelB = Project(vertexB, transformatioMatrix, worldMatrix);
                     var pixelC = Project(vertexC, transformatioMatrix, worldMatrix);
 
-                    DrawTriangle(pixelA, pixelB, pixelC, Color.FromRgb(0, 0, 0));
+                    DrawTriangle(pixelA, pixelB, pixelC, Color.FromRgb(0, 255, 0));
                     faceIndex++;
                 }
             }
