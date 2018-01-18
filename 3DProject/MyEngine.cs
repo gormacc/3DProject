@@ -93,17 +93,14 @@ namespace _3DProject
         public MyVertex PrepareVertex(MyVertex vertex)
         {
             MyVector3 coordinates = VectorCalculation.MyTransformCoordinate(vertex.Coordinates, transformationMatrix);
-            MyVector3 point3DWorld = VectorCalculation.MyTransformCoordinate(vertex.Coordinates, worldMatrix);
-            MyVector3 normal3DWorld = VectorCalculation.MyTransformCoordinate(vertex.Normal, worldMatrix);
-
             var x = coordinates.X * renderWidth + renderWidth / 2.0f;
             var y = coordinates.Y * renderHeight + renderHeight / 2.0f;
 
             return new MyVertex
             {
               Coordinates = new MyVector3(x, y, coordinates.Z),
-              Normal = normal3DWorld,
-              WorldCoordinates = point3DWorld
+              Normal = VectorCalculation.MyTransformCoordinate(vertex.Normal, worldMatrix),
+              WorldCoordinates = VectorCalculation.MyTransformCoordinate(vertex.Coordinates, worldMatrix) 
             };
         }
 
@@ -262,7 +259,7 @@ namespace _3DProject
                 MatrixCalculation.MyPerspectiveForRH(0.78f, (float) bitmap.PixelWidth / bitmap.PixelHeight, 0.01f,
                     1.0f);
 
-            Parallel.ForEach(meshes, mesh =>
+            foreach (var mesh in meshes)
             {
                 worldMatrix =
                     MatrixCalculation.MyRotationYawPitchRoll(mesh.Rotation.Y, mesh.Rotation.X, mesh.Rotation.Z);
@@ -285,7 +282,8 @@ namespace _3DProject
 
                     DrawTriangle(vertexA, vertexB, vertexC, mesh.MeshColor);
                 });
-            });
+            }
+
         }
     }
 }

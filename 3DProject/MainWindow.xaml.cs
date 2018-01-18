@@ -32,7 +32,7 @@ namespace _3DProject
 
             foreach (var mesh in meshes)
             {
-                mesh.MeshColor = Color.FromRgb(0, 255, 0);
+                mesh.MeshColor = Color.FromRgb(0, 255, 255);
             }
 
             mera.Position = new MyVector3(0, 0, 10.0f);
