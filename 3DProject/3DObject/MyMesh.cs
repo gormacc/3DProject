@@ -11,6 +11,7 @@ namespace _3DProject._3DObject
         public MyVector3 Position { get; set; } = new MyVector3();
         public MyVector3 Rotation { get; set; } = new MyVector3();
         public Color MeshColor { get; set; } = new Color();
+        public bool IsRotating { get; set; } = false;
 
         public MyMesh(string name, int vertexesCount, int facesCount)
         {
