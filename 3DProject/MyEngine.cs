@@ -253,7 +253,7 @@ namespace _3DProject
                 sumDotProduct += Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
             }
 
-            return sumDotProduct;
+            return Clamp(sumDotProduct);
         }
 
 
