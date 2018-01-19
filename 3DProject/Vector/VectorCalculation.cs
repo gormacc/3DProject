@@ -14,6 +14,24 @@ namespace _3DProject.Vector
                 );
         }
 
+        public static MyVector3 Addition(MyVector3 leftVector, MyVector3 rightVector)
+        {
+            return new MyVector3(
+                leftVector.X + rightVector.X,
+                leftVector.Y + rightVector.Y,
+                leftVector.Z + rightVector.Z
+            );
+        }
+
+        public static MyVector3 MulitplyVectorByScalar(MyVector3 vector, float scalar)
+        {
+            return new MyVector3(
+                vector.X * scalar,
+                vector.Y * scalar,
+                vector.Z * scalar
+            );
+        }
+
         public static MyVector3 Normalize(MyVector3 vector)
         {
             var divisor = (float)Math.Sqrt((vector.X * vector.X) + (vector.Y * vector.Y) + (vector.Z * vector.Z));
