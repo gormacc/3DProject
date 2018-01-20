@@ -26,7 +26,8 @@ namespace _3DProject
         private MyMatrix worldMatrix = new MyMatrix();
         private MyMatrix projectionMatrix = new MyMatrix();
 
-        private bool IsGouraurdShading { get; set; } = true;
+        private bool IsGouraurdShading { get; set; } = false;
+        private MyVector3 cameraPosition = new MyVector3();
 
         public MyEngine(WriteableBitmap bitmap)
         {
@@ -135,10 +136,24 @@ namespace _3DProject
             normal = VectorCalculation.Normalize(normal);
             var sumDotProduct = 0.0f;
 
+            var kd = 1.0f;
+            var ks = 0.0f;
+
             foreach (var light in allLights)
             {
+                var camera = VectorCalculation.Normalize(cameraPosition);
                 var lightDirection = VectorCalculation.Normalize(light);
-                sumDotProduct += Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
+
+                float NdotL = VectorCalculation.DotProduct(normal, lightDirection);
+                float diff = kd * NdotL;
+                sumDotProduct += Clamp(diff);
+
+                MyVector3 H = VectorCalculation.Normalize(new MyVector3(lightDirection.X + -camera.X,
+                    lightDirection.Y + -camera.Y, lightDirection.Z + -camera.Z));
+                float NdotH = VectorCalculation.DotProduct(normal, H);
+                float spec = ks * (float)(Math.Pow(Clamp(NdotH), 64.0f));
+
+                sumDotProduct += Clamp(spec);
             }
 
             return Clamp(sumDotProduct);
@@ -147,6 +162,8 @@ namespace _3DProject
         public void PrepareFrame(Camera camera, MyVector3[] lights, MyMesh[] meshes)
         {
             allLights = lights;
+
+            cameraPosition = camera.Position;
 
             viewMatrix = MatrixCalculation.MyLookAtLH(camera.Position, camera.Target, new MyVector3(0, 1, 0));
 
