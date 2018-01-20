@@ -27,7 +27,9 @@ namespace _3DProject
         private MyMatrix worldMatrix = new MyMatrix();
         private MyMatrix projectionMatrix = new MyMatrix();
 
-
+        private bool IsGouraurdShading { get; set; } = true;
+        private bool IsBlinnLightning { get; set; } = false;
+        private MyVector3 cameraPosition = new MyVector3();
 
         public MyEngine(WriteableBitmap bitmap)
         {
@@ -49,10 +51,10 @@ namespace _3DProject
         {
             for (var index = 0; index < backBuffer.Length; index += 4)
             {
-                SetColorOfPixel(Color.FromRgb(0,0,0), index);
+                SetColorOfPixel(Color.FromRgb(0, 0, 0), index);
             }
 
-            for(var i = 0; i < depthBuffer.Length; i++)
+            for (var i = 0; i < depthBuffer.Length; i++)
             {
                 depthBuffer[i] = float.MaxValue;
             }
@@ -60,7 +62,7 @@ namespace _3DProject
 
         public void ActualizeBitmap()
         {
-            bitmap.WritePixels(new Int32Rect(0,0,bitmap.PixelWidth, bitmap.PixelHeight),
+            bitmap.WritePixels(new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight),
                 backBuffer, bitmap.PixelWidth * 4, 0);
 
             bitmap.Lock();
@@ -98,9 +100,9 @@ namespace _3DProject
 
             return new MyVertex
             {
-              Coordinates = new MyVector3(x, y, coordinates.Z),
-              Normal = VectorCalculation.MyTransformCoordinate(vertex.Normal, worldMatrix),
-              WorldCoordinates = VectorCalculation.MyTransformCoordinate(vertex.Coordinates, worldMatrix) 
+                Coordinates = new MyVector3(x, y, coordinates.Z),
+                Normal = VectorCalculation.MyTransformCoordinate(vertex.Normal, worldMatrix),
+                WorldCoordinates = VectorCalculation.MyTransformCoordinate(vertex.Coordinates, worldMatrix)
             };
         }
 
@@ -108,31 +110,7 @@ namespace _3DProject
         {
             if (point.X >= 0 && point.Y >= 0 && point.X < renderWidth && point.Y < renderHeight)
             {
-                PutPixel((int)point.X, (int)point.Y, point.Z, color);
-            }
-        }
-
-        void ProcessScanLine(ScanLineData data, MyVector3 pa, MyVector3 pb, MyVector3 pc, MyVector3 pd, Color color)
-        {
-            var gradient1 = pa.Y != pb.Y ? (data.CurrentY - pa.Y) / (pb.Y - pa.Y) : 1;
-            var gradient2 = pc.Y != pd.Y ? (data.CurrentY - pc.Y) / (pd.Y - pc.Y) : 1;
-
-            var sx = (int)Interpolate(pa.X, pb.X, gradient1);
-            var ex = (int)Interpolate(pc.X, pd.X, gradient2);
-
-            var z1 = Interpolate(pa.Z, pb.Z, gradient1);
-            var z2 = Interpolate(pc.Z, pd.Z, gradient2);
-
-            var snl = Interpolate(data.Ndotla, data.Ndotlb, gradient1);
-            var enl = Interpolate(data.Ndotlc, data.Ndotld, gradient2);
-
-            for (var x = sx; x < ex; x++)
-            {
-                var gradient = (x - sx) / (float)(ex - sx);
-                var z = Interpolate(z1, z2, gradient);
-                var ndotl = Interpolate(snl, enl, gradient);
-
-                DrawPoint(new MyVector3(x, data.CurrentY, z), Color.FromArgb(255, (byte)(color.R * ndotl), (byte)(color.G * ndotl), (byte)(color.B * ndotl)));
+                PutPixel((int) point.X, (int) point.Y, point.Z, color);
             }
         }
 
@@ -146,121 +124,59 @@ namespace _3DProject
             return min + (max - min) * Clamp(gradient);
         }
 
-        public void DrawTriangle(MyVertex v1, MyVertex v2, MyVertex v3, Color color)
+        private static MyVector3 InterpolateVector(MyVector3 leftVector, MyVector3 rightVector, float gradient)
         {
-            if (v1.Coordinates.Y > v2.Coordinates.Y)
-            {
-                var temp = v2;
-                v2 = v1;
-                v1 = temp;
-            }
+            var alfa = Clamp(gradient);
+            MyVector3 vectorL = VectorCalculation.MulitplyVectorByScalar(leftVector, 1.0f - alfa);
+            MyVector3 vectorR = VectorCalculation.MulitplyVectorByScalar(rightVector, alfa);
 
-            if (v2.Coordinates.Y > v3.Coordinates.Y)
-            {
-                var temp = v2;
-                v2 = v3;
-                v3 = temp;
-            }
-
-            if (v1.Coordinates.Y > v2.Coordinates.Y)
-            {
-                var temp = v2;
-                v2 = v1;
-                v1 = temp;
-            }
-
-            var p1 = v1.Coordinates;
-            var p2 = v2.Coordinates;
-            var p3 = v3.Coordinates;
-
-            var nl1 = CalculateShade(v1.WorldCoordinates, v1.Normal);
-            var nl2 = CalculateShade(v2.WorldCoordinates, v2.Normal);
-            var nl3 = CalculateShade(v3.WorldCoordinates, v3.Normal);
-
-            var data = new ScanLineData();
-
-
-            float dP1P2, dP1P3;
-
-            if (p2.Y - p1.Y > 0)
-                dP1P2 = (p2.X - p1.X) / (p2.Y - p1.Y);
-            else
-                dP1P2 = 0;
-
-            if (p3.Y - p1.Y > 0)
-                dP1P3 = (p3.X - p1.X) / (p3.Y - p1.Y);
-            else
-                dP1P3 = 0;
-
-            if (dP1P2 > dP1P3)
-            {
-                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
-                {
-                    data.CurrentY = y;
-
-                    if (y < p2.Y)
-                    {
-                        data.Ndotla = nl1;
-                        data.Ndotlb = nl3;
-                        data.Ndotlc = nl1;
-                        data.Ndotld = nl2;
-                        ProcessScanLine(data, v1.Coordinates, v3.Coordinates, v1.Coordinates, v2.Coordinates, color);
-                    }
-                    else
-                    {
-                        data.Ndotla = nl1;
-                        data.Ndotlb = nl3;
-                        data.Ndotlc = nl2;
-                        data.Ndotld = nl3;
-                        ProcessScanLine(data, v1.Coordinates, v3.Coordinates, v2.Coordinates, v3.Coordinates, color);
-                    }
-                }
-            }
-            else
-            {
-                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
-                {
-                    data.CurrentY = y;
-
-                    if (y < p2.Y)
-                    {
-                        data.Ndotla = nl1;
-                        data.Ndotlb = nl2;
-                        data.Ndotlc = nl1;
-                        data.Ndotld = nl3;
-                        ProcessScanLine(data, v1.Coordinates, v2.Coordinates, v1.Coordinates, v3.Coordinates, color);
-                    }
-                    else
-                    {
-                        data.Ndotla = nl2;
-                        data.Ndotlb = nl3;
-                        data.Ndotlc = nl1;
-                        data.Ndotld = nl3;
-                        ProcessScanLine(data, v2.Coordinates, v3.Coordinates, v1.Coordinates, v3.Coordinates, color);
-                    }
-                }
-            }
+            return VectorCalculation.Addition(vectorL, vectorR);
         }
 
-        float CalculateShade(MyVector3 vertex, MyVector3 normal)
+        private float CalculateShade(MyVector3 normal)
         {
             normal = VectorCalculation.Normalize(normal);
             var sumDotProduct = 0.0f;
 
-            foreach(var light in allLights)
+            var kd = 0.4f;
+            var ks = 0.6f;
+            int n = 33;
+
+            foreach (var light in allLights)
             {
-                var lightDirection = VectorCalculation.Substitution(light, vertex);
-                lightDirection = VectorCalculation.Normalize(lightDirection);
-                sumDotProduct += Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
+                var camera = VectorCalculation.Normalize(cameraPosition);
+                var lightDirection = VectorCalculation.Normalize(light);
+
+                float NdotL = VectorCalculation.DotProduct(normal, lightDirection);
+                float diff = kd * NdotL;
+                sumDotProduct += Clamp(diff);
+
+                float spec = 0.0f;
+                if (IsBlinnLightning)
+                {
+                    MyVector3 H = VectorCalculation.Normalize(new MyVector3(lightDirection.X + -camera.X,
+                        lightDirection.Y + -camera.Y, lightDirection.Z + -camera.Z));
+                    float NdotH = VectorCalculation.DotProduct(normal, H);
+                    spec = ks * (float) (Math.Pow(Clamp(NdotH), n));
+                }
+                else
+                {
+                    var R = VectorCalculation.MyReflection(lightDirection, normal);
+                    spec = ks * (float)Math.Pow(-VectorCalculation.DotProduct(R, camera), n % 2 == 0 ? n + 1 : n);
+
+                }
+
+                sumDotProduct += Clamp(spec);
             }
 
-            return sumDotProduct;
+            return Clamp(sumDotProduct);
         }
 
-
-        public void PrepareFrame(Camera camera, MyVector3[] lights , List<MyMesh> meshes)
+        public void PrepareFrame(Camera camera, MyVector3[] lights, MyMesh[] meshes)
         {
             allLights = lights;
+
+            cameraPosition = camera.Position;
 
             viewMatrix = MatrixCalculation.MyLookAtLH(camera.Position, camera.Target, new MyVector3(0, 1, 0));
 
@@ -289,10 +205,233 @@ namespace _3DProject
                     vertexB = PrepareVertex(vertexB);
                     vertexC = PrepareVertex(vertexC);
 
-                    DrawTriangle(vertexA, vertexB, vertexC, mesh.MeshColor);
+                    if (IsGouraurdShading)
+                    {
+                        DrawTriangleGouraurd(vertexA, vertexB, vertexC, mesh.MeshColor);
+                    }
+                    else
+                    {
+                        DrawTrianglePhong(vertexA, vertexB, vertexC, mesh.MeshColor);
+                    }        
                 });
             }
-
         }
+
+        #region GouraurdShading
+
+        public void DrawTriangleGouraurd(MyVertex v1, MyVertex v2, MyVertex v3, Color color)
+        {
+            if (v1.Coordinates.Y > v2.Coordinates.Y)
+            {
+                var temp = v2;
+                v2 = v1;
+                v1 = temp;
+            }
+
+            if (v2.Coordinates.Y > v3.Coordinates.Y)
+            {
+                var temp = v2;
+                v2 = v3;
+                v3 = temp;
+            }
+
+            if (v1.Coordinates.Y > v2.Coordinates.Y)
+            {
+                var temp = v2;
+                v2 = v1;
+                v1 = temp;
+            }
+
+            var p1 = v1.Coordinates;
+            var p2 = v2.Coordinates;
+            var p3 = v3.Coordinates;
+
+            var nl1 = CalculateShade(v1.Normal);
+            var nl2 = CalculateShade(v2.Normal);
+            var nl3 = CalculateShade(v3.Normal);
+
+            float dP1P2, dP1P3;
+
+            if (p2.Y - p1.Y > 0)
+                dP1P2 = (p2.X - p1.X) / (p2.Y - p1.Y);
+            else
+                dP1P2 = 0;
+
+            if (p3.Y - p1.Y > 0)
+                dP1P3 = (p3.X - p1.X) / (p3.Y - p1.Y);
+            else
+                dP1P3 = 0;
+
+            if (dP1P2 > dP1P3)
+            {
+                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
+                {
+                    if (y < p2.Y)
+                    {
+                        var data = new GouraurdScanLineData(nl1, nl3, nl1, nl2, y);
+                        ProcessGouraurdScanLine(data, p1, p3, p1, p2, color);
+                    }
+                    else
+                    {
+                        var data = new GouraurdScanLineData(nl1, nl3, nl2, nl3, y);
+                        ProcessGouraurdScanLine(data, p1, p3, p2, p3, color);
+                    }
+                }
+            }
+            else
+            {
+                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
+                {
+                    if (y < p2.Y)
+                    {
+                        var data = new GouraurdScanLineData(nl1, nl2, nl1, nl3, y);
+                        ProcessGouraurdScanLine(data, p1, p2, p1, p3, color);
+                    }
+                    else
+                    {
+                        var data = new GouraurdScanLineData(nl2, nl3, nl1, nl3, y);
+                        ProcessGouraurdScanLine(data, p2, p3, p1, p3, color);
+                    }
+                }
+            }
+        }
+
+        
+
+        void ProcessGouraurdScanLine(GouraurdScanLineData data, MyVector3 pa, MyVector3 pb, MyVector3 pc, MyVector3 pd,
+            Color color)
+        {
+            var gradient1 = pa.Y != pb.Y ? (data.CurrentY - pa.Y) / (pb.Y - pa.Y) : 1;
+            var gradient2 = pc.Y != pd.Y ? (data.CurrentY - pc.Y) / (pd.Y - pc.Y) : 1;
+
+            var sx = (int)Interpolate(pa.X, pb.X, gradient1);
+            var ex = (int)Interpolate(pc.X, pd.X, gradient2);
+
+            var z1 = Interpolate(pa.Z, pb.Z, gradient1);
+            var z2 = Interpolate(pc.Z, pd.Z, gradient2);
+
+            var snl = Interpolate(data.Ndotla, data.Ndotlb, gradient1);
+            var enl = Interpolate(data.Ndotlc, data.Ndotld, gradient2);
+
+            for (var x = sx; x < ex; x++)
+            {
+                var gradient = (x - sx) / (float)(ex - sx);
+                var z = Interpolate(z1, z2, gradient);
+                var ndotl = Interpolate(snl, enl, gradient);
+
+                DrawPoint(new MyVector3(x, data.CurrentY, z),
+                    Color.FromArgb(255, (byte)(color.R * ndotl), (byte)(color.G * ndotl), (byte)(color.B * ndotl)));
+            }
+        }
+
+        #endregion
+
+        #region PhongShading
+
+        public void DrawTrianglePhong(MyVertex v1, MyVertex v2, MyVertex v3, Color color)
+        {
+            if (v1.Coordinates.Y > v2.Coordinates.Y)
+            {
+                var temp = v2;
+                v2 = v1;
+                v1 = temp;
+            }
+
+            if (v2.Coordinates.Y > v3.Coordinates.Y)
+            {
+                var temp = v2;
+                v2 = v3;
+                v3 = temp;
+            }
+
+            if (v1.Coordinates.Y > v2.Coordinates.Y)
+            {
+                var temp = v2;
+                v2 = v1;
+                v1 = temp;
+            }
+
+            var p1 = v1.Coordinates;
+            var p2 = v2.Coordinates;
+            var p3 = v3.Coordinates;
+
+            float dP1P2, dP1P3;
+
+            if (p2.Y - p1.Y > 0)
+                dP1P2 = (p2.X - p1.X) / (p2.Y - p1.Y);
+            else
+                dP1P2 = 0;
+
+            if (p3.Y - p1.Y > 0)
+                dP1P3 = (p3.X - p1.X) / (p3.Y - p1.Y);
+            else
+                dP1P3 = 0;
+
+            if (dP1P2 > dP1P3)
+            {
+                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
+                {
+                    if (y < p2.Y)
+                    {
+                        var data = new PhongScanLineData(v1.Normal, v3.Normal, v1.Normal, v2.Normal, y);
+                        ProcessPhongScanLine(data, p1, p3, p1, p2, color);
+                    }
+                    else
+                    {
+                        var data = new PhongScanLineData(v1.Normal, v3.Normal, v2.Normal, v3.Normal, y);
+                        ProcessPhongScanLine(data, p1, p3, p2, p3, color);
+                    }
+                }
+            }
+            else
+            {
+                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
+                {
+                    if (y < p2.Y)
+                    {
+                        var data = new PhongScanLineData(v1.Normal, v2.Normal, v1.Normal, v3.Normal, y);
+                        ProcessPhongScanLine(data, p1, p2, p1, p3, color);
+                    }
+                    else
+                    {
+                        var data = new PhongScanLineData(v2.Normal, v3.Normal, v1.Normal, v3.Normal, y);
+                        ProcessPhongScanLine(data, p2, p3, p1, p3, color);
+                    }
+                }
+            }
+        }
+
+        void ProcessPhongScanLine(PhongScanLineData data, MyVector3 pa, MyVector3 pb, MyVector3 pc, MyVector3 pd,
+            Color color)
+        {
+            var gradient1 = pa.Y != pb.Y ? (data.CurrentY - pa.Y) / (pb.Y - pa.Y) : 1;
+            var gradient2 = pc.Y != pd.Y ? (data.CurrentY - pc.Y) / (pd.Y - pc.Y) : 1;
+
+            var sx = (int)Interpolate(pa.X, pb.X, gradient1);
+            var ex = (int)Interpolate(pc.X, pd.X, gradient2);
+
+            var z1 = Interpolate(pa.Z, pb.Z, gradient1);
+            var z2 = Interpolate(pc.Z, pd.Z, gradient2);
+
+            var sn = InterpolateVector(data.NormalA, data.NormalB, gradient1);
+            var en = InterpolateVector(data.NormalC, data.NormalD, gradient2);
+
+            for (var x = sx; x < ex; x++)
+            {
+                var gradient = (x - sx) / (float)(ex - sx);
+                var z = Interpolate(z1, z2, gradient);
+                var normal = InterpolateVector(sn, en, gradient);
+                var shade = CalculateShade(normal);
+
+                DrawPoint(new MyVector3(x, data.CurrentY, z),
+                    Color.FromArgb(255, (byte)(color.R * shade), (byte)(color.G * shade), (byte)(color.B * shade)));
+            }
+        }
+
+
+
+        #endregion
+
+
     }
 }

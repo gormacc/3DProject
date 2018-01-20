@@ -60,11 +60,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="3DObject\MyFace.cs" />
+    <Compile Include="PhongScanLineData.cs" />
     <Compile Include="Vector\MyVector2.cs" />
     <Compile Include="Vector\MyVector4.cs" />
     <Compile Include="3DObject\MyVertex.cs" />
     <Compile Include="3DObject\ObjectLoader.cs" />
-    <Compile Include="ScanLineData.cs" />
+    <Compile Include="GouraurdScanLineData.cs" />
     <Compile Include="Vector\VectorCalculation.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

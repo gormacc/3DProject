@@ -14,6 +14,24 @@ namespace _3DProject.Vector
                 );
         }
 
+        public static MyVector3 Addition(MyVector3 leftVector, MyVector3 rightVector)
+        {
+            return new MyVector3(
+                leftVector.X + rightVector.X,
+                leftVector.Y + rightVector.Y,
+                leftVector.Z + rightVector.Z
+            );
+        }
+
+        public static MyVector3 MulitplyVectorByScalar(MyVector3 vector, float scalar)
+        {
+            return new MyVector3(
+                vector.X * scalar,
+                vector.Y * scalar,
+                vector.Z * scalar
+            );
+        }
+
         public static MyVector3 Normalize(MyVector3 vector)
         {
             var divisor = (float)Math.Sqrt((vector.X * vector.X) + (vector.Y * vector.Y) + (vector.Z * vector.Z));
@@ -82,6 +100,15 @@ namespace _3DProject.Vector
             var vector4 = MultiplyVectorByMatrix(new MyVector4(vec), matrix);
 
             return new MyVector3(vector4.X / vector4.W, vector4.Y / vector4.W, vector4.Z / vector4.W);
+        }
+
+        public static MyVector3 MyReflection(MyVector3 lightVector, MyVector3 normalVector)
+        {
+            float dot = DotProduct(normalVector, lightVector);
+            dot = dot * 2;
+            MyVector3 retVector = new MyVector3(normalVector.X * dot, normalVector.Y * dot, normalVector.Z * dot);
+            retVector = Substitution(retVector, lightVector);
+            return retVector;
         }
 
 
