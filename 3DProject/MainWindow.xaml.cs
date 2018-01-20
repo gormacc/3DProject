@@ -23,6 +23,7 @@ namespace _3DProject
         Camera mera = new Camera();
         private MyVector3[] lights;
         private int sign = 1;
+        private bool snowflakeCamera = true;
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -38,13 +39,13 @@ namespace _3DProject
 
             InitializeMeshes(meshes);
 
-            mera.Position = new MyVector3(0.0f, 0.0f, 12.0f);
+            mera.Position = new MyVector3(0.0f, -1.0f, 12.0f);
             mera.Target = new MyVector3(0,2,0);
 
             lights = new[]
             {
-                new MyVector3(0.0f, 0.0f, -10.0f),
-                //new MyVector3(0.0f, -10.0f, -5.0f) 
+                new MyVector3(10.0f, 10.0f, -5.0f),
+                new MyVector3(-10.0f, 5.0f, -5.0f) 
             };
 
 
@@ -62,15 +63,23 @@ namespace _3DProject
                     mesh.Rotation = new MyVector3(mesh.Rotation.X + 0.1f, mesh.Rotation.Y + 0.1f, mesh.Rotation.Z);
 
                     var position = mesh.Position;
-
                     if (position.Z >= 3 || position.Z <= -3)
                     {
                         sign = -sign;
                     }
 
                     var x = -sign * (float)Math.Sqrt(9 - position.Z * position.Z);
-                    var z = position.Z + (sign * 0.02f);
+                    var z = position.Z + (sign * 0.03f);
                     mesh.Position = new MyVector3(x, position.Y, z);
+
+                    if (snowflakeCamera)
+                    {
+                        var cameraPosition = mera.Position;
+                        var xC = -sign * (float)Math.Sqrt(4 - position.Z * position.Z);
+                        var zC = position.Z + (sign * 0.02f);
+                        mera.Position = new MyVector3(xC, cameraPosition.Y, zC);
+                    }
+                    
                 }
             }
             
