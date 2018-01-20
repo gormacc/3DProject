@@ -41,8 +41,8 @@ namespace _3DProject
 
             lights = new[]
             {
-                new MyVector3(0.0f, 10.0f, -5.0f),
-                new MyVector3(0.0f, -10.0f, -5.0f) 
+                new MyVector3(0.0f, 0.0f, -10.0f),
+                //new MyVector3(0.0f, -10.0f, -5.0f) 
             };
 
 

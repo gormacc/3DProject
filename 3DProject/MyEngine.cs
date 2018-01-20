@@ -130,6 +130,19 @@ namespace _3DProject
             return VectorCalculation.Addition(vectorL, vectorR);
         }
 
+        private float CalculateShade(MyVector3 normal)
+        {
+            normal = VectorCalculation.Normalize(normal);
+            var sumDotProduct = 0.0f;
+
+            foreach (var light in allLights)
+            {
+                var lightDirection = VectorCalculation.Normalize(light);
+                sumDotProduct += Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
+            }
+
+            return Clamp(sumDotProduct);
+        }
 
         public void PrepareFrame(Camera camera, MyVector3[] lights, MyMesh[] meshes)
         {
@@ -203,9 +216,9 @@ namespace _3DProject
             var p2 = v2.Coordinates;
             var p3 = v3.Coordinates;
 
-            var nl1 = CalculateGouraurdShade(v1.WorldCoordinates, v1.Normal);
-            var nl2 = CalculateGouraurdShade(v2.WorldCoordinates, v2.Normal);
-            var nl3 = CalculateGouraurdShade(v3.WorldCoordinates, v3.Normal);
+            var nl1 = CalculateShade(v1.Normal);
+            var nl2 = CalculateShade(v2.Normal);
+            var nl3 = CalculateShade(v3.Normal);
 
             float dP1P2, dP1P3;
 
@@ -253,20 +266,7 @@ namespace _3DProject
             }
         }
 
-        private float CalculateGouraurdShade(MyVector3 vertex, MyVector3 normal)
-        {
-            normal = VectorCalculation.Normalize(normal);
-            var sumDotProduct = 0.0f;
-
-            foreach (var light in allLights)
-            {
-                var lightDirection = VectorCalculation.Substitution(light, vertex);
-                lightDirection = VectorCalculation.Normalize(lightDirection);
-                sumDotProduct += Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
-            }
-
-            return Clamp(sumDotProduct);
-        }
+        
 
         void ProcessGouraurdScanLine(GouraurdScanLineData data, MyVector3 pa, MyVector3 pb, MyVector3 pc, MyVector3 pd,
             Color color)
@@ -391,27 +391,17 @@ namespace _3DProject
                 var gradient = (x - sx) / (float)(ex - sx);
                 var z = Interpolate(z1, z2, gradient);
                 var normal = InterpolateVector(sn, en, gradient);
-                var shade = CalculatePhongShade(new MyVector3(x, data.CurrentY, z), normal);
+                var shade = CalculateShade(normal);
 
                 DrawPoint(new MyVector3(x, data.CurrentY, z),
                     Color.FromArgb(255, (byte)(color.R * shade), (byte)(color.G * shade), (byte)(color.B * shade)));
             }
         }
 
-        private float CalculatePhongShade(MyVector3 vertex, MyVector3 normal)
-        {
-            normal = VectorCalculation.Normalize(normal);
-            var sumDotProduct = 0.0f;
 
-            foreach (var light in allLights)
-            {
-                var lightDirection = VectorCalculation.Normalize(light);
-                sumDotProduct += Math.Max(0, VectorCalculation.DotProduct(normal, lightDirection));
-            }
-
-            return Clamp(sumDotProduct);
-        }
 
         #endregion
+
+
     }
 }
