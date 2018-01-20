@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using _3DProject.Vector;
 
 namespace _3DProject._3DObject
 {
     public static class ObjectLoader
     {
-        public static MyMesh[] LoadJSONFile(string fileName)
+        public static List<MyMesh> LoadJSONFile(string fileName)
         {
             var meshes = new List<MyMesh>();
 
@@ -81,7 +82,7 @@ namespace _3DProject._3DObject
                 mesh.Position = new MyVector3((float)position[0].Value, (float)position[1].Value, (float)position[2].Value);
                 meshes.Add(mesh);
             }
-            return meshes.ToArray();
+            return meshes.ToList();
         }
     }
 }

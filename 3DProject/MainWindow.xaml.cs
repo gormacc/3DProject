@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -18,7 +19,7 @@ namespace _3DProject
         }
 
         private MyEngine engine;
-        private MyMesh[] meshes;
+        private List<MyMesh> meshes;
         Camera mera = new Camera();
         private MyVector3[] lights;
         private int sign = 1;
@@ -33,15 +34,17 @@ namespace _3DProject
 
             meshes = ObjectLoader.LoadJSONFile("wholeScene8.babylon");
 
+            //AddGroundMesh();
+
             InitializeMeshes(meshes);
 
-            mera.Position = new MyVector3(0.0f, -5.0f, 20.0f);
-            mera.Target = new MyVector3();
+            mera.Position = new MyVector3(0.0f, 0.0f, 12.0f);
+            mera.Target = new MyVector3(0,2,0);
 
             lights = new[]
             {
                 new MyVector3(20.0f, 0.0f, -10.0f),
-                //new MyVector3(-20.0f, 10.0f, 0) 
+                new MyVector3(-20.0f, 10.0f, 0)
             };
 
 
@@ -76,7 +79,7 @@ namespace _3DProject
         }
 
 
-        private void InitializeMeshes(MyMesh[] meshes)
+        private void InitializeMeshes(List<MyMesh> meshes)
         {
             Random rand = new Random();
 
@@ -119,6 +122,72 @@ namespace _3DProject
                         
                 }
             }          
+        }
+
+        private void AddGroundMesh()
+        {
+            MyMesh ground = new MyMesh("Ground", 4, 2);
+
+            MyVertex vertexA = new MyVertex()
+            {
+                 Coordinates = new MyVector3(-5, -1, -10)
+            };
+
+            MyVertex vertexB = new MyVertex()
+            {
+                Coordinates = new MyVector3(5, -1, -10)
+            };
+
+            MyVertex vertexC = new MyVertex()
+            {
+                Coordinates = new MyVector3(5, -1, 10)
+            };
+
+            MyVertex vertexD = new MyVertex()
+            {
+                Coordinates = new MyVector3(-5, 0, 10)
+            };
+
+            vertexA.Normal = VectorCalculation.CrossProduct(
+                VectorCalculation.Substitution(vertexD.Coordinates, vertexA.Coordinates),
+                VectorCalculation.Substitution(vertexB.Coordinates, vertexA.Coordinates));
+
+            vertexD.Normal = VectorCalculation.CrossProduct(
+                VectorCalculation.Substitution(vertexC.Coordinates, vertexD.Coordinates),
+                VectorCalculation.Substitution(vertexA.Coordinates, vertexD.Coordinates));
+
+            vertexC.Normal = VectorCalculation.CrossProduct(
+                VectorCalculation.Substitution(vertexB.Coordinates, vertexC.Coordinates),
+                VectorCalculation.Substitution(vertexD.Coordinates, vertexC.Coordinates));
+
+            vertexB.Normal = VectorCalculation.CrossProduct(
+                VectorCalculation.Substitution(vertexA.Coordinates, vertexB.Coordinates),
+                VectorCalculation.Substitution(vertexC.Coordinates, vertexB.Coordinates));
+
+            MyFace faceA = new MyFace
+            {
+                A = 0,
+                B = 1,
+                C = 3
+            };
+
+            MyFace faceB = new MyFace
+            {
+                A = 2,
+                B = 1,
+                C = 3
+            };
+
+            ground.Vertexes[0] = vertexA;
+            ground.Vertexes[1] = vertexB;
+            ground.Vertexes[2] = vertexC;
+            ground.Vertexes[3] = vertexD;
+
+            ground.Faces[0] = faceA;
+            ground.Faces[1] = faceB;
+
+            meshes.Add(ground);
+
         }
 
     }

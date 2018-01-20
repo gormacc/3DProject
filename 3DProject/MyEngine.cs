@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -257,7 +258,7 @@ namespace _3DProject
         }
 
 
-        public void PrepareFrame(Camera camera, MyVector3[] lights , MyMesh[] meshes)
+        public void PrepareFrame(Camera camera, MyVector3[] lights , List<MyMesh> meshes)
         {
             allLights = lights;
 
