@@ -102,6 +102,15 @@ namespace _3DProject.Vector
             return new MyVector3(vector4.X / vector4.W, vector4.Y / vector4.W, vector4.Z / vector4.W);
         }
 
+        public static MyVector3 MyReflection(MyVector3 lightVector, MyVector3 normalVector)
+        {
+            float dot = DotProduct(normalVector, lightVector);
+            dot = dot * 2;
+            MyVector3 retVector = new MyVector3(normalVector.X * dot, normalVector.Y * dot, normalVector.Z * dot);
+            retVector = Substitution(retVector, lightVector);
+            return retVector;
+        }
+
 
     }
 }

@@ -26,7 +26,8 @@ namespace _3DProject
         private MyMatrix worldMatrix = new MyMatrix();
         private MyMatrix projectionMatrix = new MyMatrix();
 
-        private bool IsGouraurdShading { get; set; } = false;
+        private bool IsGouraurdShading { get; set; } = true;
+        private bool IsBlinnLightning { get; set; } = false;
         private MyVector3 cameraPosition = new MyVector3();
 
         public MyEngine(WriteableBitmap bitmap)
@@ -136,8 +137,9 @@ namespace _3DProject
             normal = VectorCalculation.Normalize(normal);
             var sumDotProduct = 0.0f;
 
-            var kd = 1.0f;
-            var ks = 0.0f;
+            var kd = 0.4f;
+            var ks = 0.6f;
+            int n = 33;
 
             foreach (var light in allLights)
             {
@@ -148,10 +150,20 @@ namespace _3DProject
                 float diff = kd * NdotL;
                 sumDotProduct += Clamp(diff);
 
-                MyVector3 H = VectorCalculation.Normalize(new MyVector3(lightDirection.X + -camera.X,
-                    lightDirection.Y + -camera.Y, lightDirection.Z + -camera.Z));
-                float NdotH = VectorCalculation.DotProduct(normal, H);
-                float spec = ks * (float)(Math.Pow(Clamp(NdotH), 64.0f));
+                float spec = 0.0f;
+                if (IsBlinnLightning)
+                {
+                    MyVector3 H = VectorCalculation.Normalize(new MyVector3(lightDirection.X + -camera.X,
+                        lightDirection.Y + -camera.Y, lightDirection.Z + -camera.Z));
+                    float NdotH = VectorCalculation.DotProduct(normal, H);
+                    spec = ks * (float) (Math.Pow(Clamp(NdotH), n));
+                }
+                else
+                {
+                    var R = VectorCalculation.MyReflection(lightDirection, normal);
+                    spec = ks * (float)Math.Pow(-VectorCalculation.DotProduct(R, camera), n % 2 == 0 ? n + 1 : n);
+
+                }
 
                 sumDotProduct += Clamp(spec);
             }
