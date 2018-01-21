@@ -1,6 +1,6 @@
 ﻿using _3DProject.Vector;
 
-namespace _3DProject
+namespace _3DProject._3DObject
 {
     public class Camera
     {

@@ -6,8 +6,42 @@
         xmlns:local="clr-namespace:_3DProject"
         mc:Ignorable="d"
         Loaded="MainWindow_OnLoaded"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="450" Width="925">
     <Grid>
-        <Image x:Name="FrontBuffer"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <Image x:Name="FrontBuffer" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Background="Coral">
+            <GroupBox Header="Kamery">
+                <StackPanel>
+                    <RadioButton Content="Domyślna kamera" Checked="SetDefaultCamera" IsChecked="True" GroupName="CameraRadioButton"/>
+                    <RadioButton Content="Śledząca ruchomy obiekt" Checked="SetSnowflakeTargetedCamera" GroupName="CameraRadioButton"/>
+                    <RadioButton Content="Związana z ruchomym obiektem" Checked="SetSnowflakePositionedCamera" GroupName="CameraRadioButton"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Model oświetlenia">
+                <StackPanel>
+                    <RadioButton Content="Model Blinna" Checked="SetBlinnLightningModel" Name="SetBlinnLightningRadioButton" GroupName="LightModelRadioButton"/>
+                    <RadioButton Content="Model Phonga" Checked="SetPhongLightningModel" GroupName="LightModelRadioButton"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Cienowanie">
+                <StackPanel>
+                    <RadioButton Content="cieniowanie Gourauda" Checked="SetGouraudShading" Name="SetGouraudShadingRadioButton" GroupName="ShadingRadioButton"/>
+                    <RadioButton Content="cieniowanie Phonga" Checked="SetPhongShading" GroupName="ShadingRadioButton"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Światła">
+                <StackPanel>
+                    <CheckBox Content="Światło 1" Checked="SetLightOneOn" Unchecked="SetLightOneOff" Name="LightOneCheckBox" />
+                    <CheckBox Content="Światło 2" Checked="SetLightTwoOn" Unchecked="SetLightTwoOff" />
+                    <CheckBox Content="Światło 3" Checked="SetLightThreeOn" Unchecked="SetLightThreeOff"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
     </Grid>
 </Window>

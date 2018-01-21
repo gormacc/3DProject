@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using _3DProject.Matrix;
+using _3DProject.ScanLineData;
 using _3DProject.Vector;
 using _3DProject._3DObject;
 
@@ -20,15 +21,16 @@ namespace _3DProject
         private readonly int renderHeight;
         private readonly int renderLength;
 
-        private MyVector3[] allLights = {new MyVector3(0.0f, 10.0f, -5.0f)};
+        private Light[] allLights;
 
         private MyMatrix transformationMatrix = new MyMatrix();
         private MyMatrix viewMatrix = new MyMatrix();
         private MyMatrix worldMatrix = new MyMatrix();
         private MyMatrix projectionMatrix = new MyMatrix();
 
-        private bool IsGouraurdShading { get; set; } = false;
-        private bool IsBlinnLightning { get; set; } = true;
+        public bool IsGouraurdShading { get; set; } = true;
+        public bool IsBlinnLightning { get; set; } = true;
+
         private MyVector3 cameraPosition = new MyVector3();
 
         public MyEngine(WriteableBitmap bitmap)
@@ -144,35 +146,37 @@ namespace _3DProject
 
             foreach (var light in allLights)
             {
-                var camera = VectorCalculation.Normalize(cameraPosition);
-                var lightDirection = VectorCalculation.Normalize(light);
-
-                float NdotL = VectorCalculation.DotProduct(normal, lightDirection);
-                float diff = kd * NdotL;
-                sumDotProduct += Clamp(diff);
-
-                float spec = 0.0f;
-                if (IsBlinnLightning)
+                if (light.IsActive)
                 {
-                    MyVector3 H = VectorCalculation.Normalize(new MyVector3(lightDirection.X + -camera.X,
-                        lightDirection.Y + -camera.Y, lightDirection.Z + -camera.Z));
-                    float NdotH = VectorCalculation.DotProduct(normal, H);
-                    spec = ks * (float) (Math.Pow(Clamp(NdotH), n));
-                }
-                else
-                {
-                    var R = VectorCalculation.MyReflection(lightDirection, normal);
-                    spec = ks * (float)Math.Pow(-VectorCalculation.DotProduct(R, camera), n % 2 == 0 ? n + 1 : n);
+                    var camera = VectorCalculation.Normalize(cameraPosition);
+                    var lightDirection = VectorCalculation.Normalize(light.Position);
 
-                }
+                    var NdotL = VectorCalculation.DotProduct(normal, lightDirection);
+                    var diff = kd * NdotL;
+                    sumDotProduct += Clamp(diff);
 
-                sumDotProduct += Clamp(spec);
+                    var spec = 0.0f;
+                    if (IsBlinnLightning)
+                    {
+                        MyVector3 H = VectorCalculation.Normalize(new MyVector3(lightDirection.X + -camera.X,
+                            lightDirection.Y + -camera.Y, lightDirection.Z + -camera.Z));
+                        var NdotH = VectorCalculation.DotProduct(normal, H);
+                        spec = ks * (float)(Math.Pow(Clamp(NdotH), n));
+                    }
+                    else
+                    {
+                        var R = VectorCalculation.MyReflection(lightDirection, normal);
+                        spec = ks * (float)Math.Pow(-VectorCalculation.DotProduct(R, camera), n % 2 == 0 ? n + 1 : n);
+                    }
+
+                    sumDotProduct += Clamp(spec);
+                }
             }
 
             return Clamp(sumDotProduct);
         }
 
-        public void PrepareFrame(Camera camera, MyVector3[] lights, List<MyMesh> meshes)
+        public void PrepareFrame(Camera camera, Light[] lights, List<MyMesh> meshes)
         {
             allLights = lights;
 
