@@ -23,14 +23,14 @@
             </GroupBox>
             <GroupBox Header="Model oświetlenia">
                 <StackPanel>
-                    <RadioButton Content="Model Blinna" GroupName="LightModelRadioButton"/>
-                    <RadioButton Content="Model Phonga" GroupName="LightModelRadioButton"/>
+                    <RadioButton Content="Model Blinna" Checked="SetBlinnLightningModel" Name="SetBlinnLightningRadioButton" GroupName="LightModelRadioButton"/>
+                    <RadioButton Content="Model Phonga" Checked="SetPhongLightningModel" GroupName="LightModelRadioButton"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Cienowanie">
                 <StackPanel>
-                    <RadioButton Content="cieniowanie Gourauda" GroupName="ShadingRadioButton"/>
-                    <RadioButton Content="cieniowanie Phonga" GroupName="ShadingRadioButton"/>
+                    <RadioButton Content="cieniowanie Gourauda" Checked="SetGouraudShading" Name="SetGouraudShadingRadioButton" GroupName="ShadingRadioButton"/>
+                    <RadioButton Content="cieniowanie Phonga" Checked="SetPhongShading" GroupName="ShadingRadioButton"/>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

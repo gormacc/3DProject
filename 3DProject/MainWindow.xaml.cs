@@ -42,6 +42,8 @@ namespace _3DProject
 
             SetDefaultCamera(new object(), null);
 
+            SetDefaultLightningAndShading();
+
             lights = new[]
             {
                 new MyVector3(10.0f, 10.0f, -5.0f),
@@ -225,6 +227,32 @@ namespace _3DProject
             snowflakeCamera = true;
             snowflakeTargetedCamera = false;
             camera.Target = new MyVector3(0, 2, 0);
+        }
+
+        private void SetBlinnLightningModel(object sender, RoutedEventArgs e)
+        {
+            engine.IsBlinnLightning = true;
+        }
+
+        private void SetPhongLightningModel(object sender, RoutedEventArgs e)
+        {
+            engine.IsBlinnLightning = false;
+        }
+
+        private void SetGouraudShading(object sender, RoutedEventArgs e)
+        {
+            engine.IsGouraurdShading = true;
+        }
+
+        private void SetPhongShading(object sender, RoutedEventArgs e)
+        {
+            engine.IsGouraurdShading = false;
+        }
+
+        private void SetDefaultLightningAndShading()
+        {
+            SetBlinnLightningRadioButton.IsChecked = true;
+            SetGouraudShadingRadioButton.IsChecked = true;
         }
     }
 }

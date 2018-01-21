@@ -27,8 +27,9 @@ namespace _3DProject
         private MyMatrix worldMatrix = new MyMatrix();
         private MyMatrix projectionMatrix = new MyMatrix();
 
-        private bool IsGouraurdShading { get; set; } = false;
-        private bool IsBlinnLightning { get; set; } = true;
+        public bool IsGouraurdShading { get; set; } = true;
+        public bool IsBlinnLightning { get; set; } = true;
+
         private MyVector3 cameraPosition = new MyVector3();
 
         public MyEngine(WriteableBitmap bitmap)
