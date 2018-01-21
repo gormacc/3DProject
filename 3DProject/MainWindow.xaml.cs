@@ -21,35 +21,24 @@ namespace _3DProject
         private MyEngine engine;
         private List<MyMesh> meshes;
         Camera camera = new Camera();
-        private MyVector3[] lights;
+        private Light[] lights;
         private int sign = 1;
-        private bool snowflakeCamera = false;
-        private bool snowflakeTargetedCamera = false;
+        private bool snowflakeCamera;
+        private bool snowflakeTargetedCamera;
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             var bmp = new WriteableBitmap(320, 240, 60, 80, PixelFormats.Bgra32, null);
-
             engine = new MyEngine(bmp);
-
             FrontBuffer.Source = bmp;
 
             meshes = ObjectLoader.LoadJSONFile("wholeScene8.babylon");
-
             //AddGroundMesh();
-
             InitializeMeshes(meshes);
 
             SetDefaultCamera(new object(), null);
-
             SetDefaultLightningAndShading();
-
-            lights = new[]
-            {
-                new MyVector3(10.0f, 10.0f, -5.0f),
-                new MyVector3(-10.0f, 5.0f, -5.0f) 
-            };
-
+            SetLights();
 
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
@@ -94,6 +83,40 @@ namespace _3DProject
             engine.ActualizeBitmap();
         }
 
+        #region Initialization
+
+
+        private void SetLights()
+        {
+            lights = new[]
+            {
+                new Light()
+                {
+                    Position = new MyVector3(10.0f, 3.0f, 0.0f),
+                    IsActive = false
+                },
+
+                new Light()
+                {
+                    Position = new MyVector3(0.0f, 8.0f, -10.0f),
+                    IsActive = false
+                },
+
+                new Light()
+                {
+                    Position = new MyVector3(0.0f, 8.0f, 0.0f),
+                    IsActive = false
+                },
+            };
+
+            LightOneCheckBox.IsChecked = true;
+        }
+
+        private void SetDefaultLightningAndShading()
+        {
+            SetBlinnLightningRadioButton.IsChecked = true;
+            SetGouraudShadingRadioButton.IsChecked = true;
+        }
 
         private void InitializeMeshes(List<MyMesh> meshes)
         {
@@ -104,11 +127,6 @@ namespace _3DProject
                 switch (mesh.Name)
                 {
                     case "Ground":
-                    {
-                        mesh.MeshColor = Color.FromRgb(255,255,255);
-                        break;
-                    }
-                    case "Ground2":
                     {
                         mesh.MeshColor = Color.FromRgb(255, 255, 255);
                         break;
@@ -135,10 +153,11 @@ namespace _3DProject
                         mesh.MeshColor = Color.FromRgb((byte)(rand.Next() % 255), (byte)(rand.Next() % 255), (byte)(rand.Next() % 255));
                         break;
                     }
-                        
+
                 }
-            }          
+            }
         }
+
 
         private void AddGroundMesh()
         {
@@ -146,7 +165,7 @@ namespace _3DProject
 
             MyVertex vertexA = new MyVertex()
             {
-                 Coordinates = new MyVector3(-5, -1, -10)
+                Coordinates = new MyVector3(-5, -1, -10)
             };
 
             MyVertex vertexB = new MyVertex()
@@ -206,6 +225,12 @@ namespace _3DProject
 
         }
 
+        #endregion
+
+
+
+
+
         private void SetDefaultCamera(object sender, RoutedEventArgs e)
         {
             snowflakeCamera = false;
@@ -249,10 +274,35 @@ namespace _3DProject
             engine.IsGouraurdShading = false;
         }
 
-        private void SetDefaultLightningAndShading()
+
+        private void SetLightOneOn(object sender, RoutedEventArgs e)
         {
-            SetBlinnLightningRadioButton.IsChecked = true;
-            SetGouraudShadingRadioButton.IsChecked = true;
+            lights[0].IsActive = true;
+        }
+
+        private void SetLightOneOff(object sender, RoutedEventArgs e)
+        {
+            lights[0].IsActive = false;
+        }
+
+        private void SetLightTwoOn(object sender, RoutedEventArgs e)
+        {
+            lights[1].IsActive = true;
+        }
+
+        private void SetLightTwoOff(object sender, RoutedEventArgs e)
+        {
+            lights[1].IsActive = false;
+        }
+
+        private void SetLightThreeOn(object sender, RoutedEventArgs e)
+        {
+            lights[2].IsActive = true;
+        }
+
+        private void SetLightThreeOff(object sender, RoutedEventArgs e)
+        {
+            lights[2].IsActive = false;
         }
     }
 }
