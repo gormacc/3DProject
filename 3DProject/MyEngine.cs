@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -26,8 +27,8 @@ namespace _3DProject
         private MyMatrix worldMatrix = new MyMatrix();
         private MyMatrix projectionMatrix = new MyMatrix();
 
-        private bool IsGouraurdShading { get; set; } = true;
-        private bool IsBlinnLightning { get; set; } = false;
+        private bool IsGouraurdShading { get; set; } = false;
+        private bool IsBlinnLightning { get; set; } = true;
         private MyVector3 cameraPosition = new MyVector3();
 
         public MyEngine(WriteableBitmap bitmap)
@@ -171,7 +172,7 @@ namespace _3DProject
             return Clamp(sumDotProduct);
         }
 
-        public void PrepareFrame(Camera camera, MyVector3[] lights, MyMesh[] meshes)
+        public void PrepareFrame(Camera camera, MyVector3[] lights, List<MyMesh> meshes)
         {
             allLights = lights;
 
