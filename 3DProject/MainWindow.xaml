@@ -13,6 +13,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0">
+            <TextBlock Name="FpsTextBlock" />
             <Image x:Name="FrontBuffer" />
         </StackPanel>
         <StackPanel Grid.Column="1" Background="Coral">
@@ -37,9 +38,9 @@
             </GroupBox>
             <GroupBox Header="Światła">
                 <StackPanel>
-                    <CheckBox Content="Światło 1" Checked="SetLightOneOn" Unchecked="SetLightOneOff" Name="LightOneCheckBox" />
-                    <CheckBox Content="Światło 2" Checked="SetLightTwoOn" Unchecked="SetLightTwoOff" />
-                    <CheckBox Content="Światło 3" Checked="SetLightThreeOn" Unchecked="SetLightThreeOff"/>
+                    <CheckBox Content="Światło 1 (od prawej)" Checked="SetLightOneOn" Unchecked="SetLightOneOff" Name="LightOneCheckBox" />
+                    <CheckBox Content="Światło 2 (od frontu)" Checked="SetLightTwoOn" Unchecked="SetLightTwoOff" />
+                    <CheckBox Content="Światło 3 (od góry)" Checked="SetLightThreeOn" Unchecked="SetLightThreeOff"/>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

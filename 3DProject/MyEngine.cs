@@ -140,9 +140,9 @@ namespace _3DProject
             normal = VectorCalculation.Normalize(normal);
             var sumDotProduct = 0.0f;
 
-            var kd = 0.4f;
-            var ks = 0.6f;
-            int n = 33;
+            var kd = 0.5f;
+            var ks = 0.5f;
+            int n = 63;
 
             foreach (var light in allLights)
             {

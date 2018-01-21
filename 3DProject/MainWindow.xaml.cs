@@ -32,7 +32,7 @@ namespace _3DProject
             engine = new MyEngine(bmp);
             FrontBuffer.Source = bmp;
 
-            meshes = ObjectLoader.LoadJSONFile("wholeScene8.babylon");
+            meshes = ObjectLoader.LoadJSONFile("wholeScene.babylon");
             //AddGroundMesh();
             InitializeMeshes(meshes);
 
@@ -45,6 +45,8 @@ namespace _3DProject
 
         void CompositionTarget_Rendering(object sender, object e)
         {
+            FpsCounter();
+
             engine.ClearBitmap();
 
             foreach (var mesh in meshes)
@@ -81,6 +83,18 @@ namespace _3DProject
             
             engine.PrepareFrame(camera, lights, meshes);
             engine.ActualizeBitmap();
+        }
+
+        private DateTime previousDate = DateTime.Now;
+
+        private void FpsCounter()
+        {
+            // Fps
+            var now = DateTime.Now;
+            var currentFps = 1000.0 / (now - previousDate).TotalMilliseconds;
+            previousDate = now;
+
+            FpsTextBlock.Text = $"{currentFps:0.00} fps";
         }
 
         #region Initialization
@@ -228,8 +242,7 @@ namespace _3DProject
         #endregion
 
 
-
-
+        #region GUI
 
         private void SetDefaultCamera(object sender, RoutedEventArgs e)
         {
@@ -304,5 +317,8 @@ namespace _3DProject
         {
             lights[2].IsActive = false;
         }
+
+        #endregion
+
     }
 }
