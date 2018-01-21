@@ -6,8 +6,33 @@
         xmlns:local="clr-namespace:_3DProject"
         mc:Ignorable="d"
         Loaded="MainWindow_OnLoaded"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="725">
     <Grid>
-        <Image x:Name="FrontBuffer"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Image x:Name="FrontBuffer" Grid.Column="0"/>
+        <StackPanel Grid.Column="1" Background="Coral">
+            <GroupBox Header="Kamery">
+                <StackPanel>
+                    <RadioButton Content="Domyślna kamera" Checked="SetDefaultCamera" IsChecked="True" GroupName="CameraRadioButton"/>
+                    <RadioButton Content="Śledząca ruchomy obiekt" Checked="SetSnowflakeTargetedCamera" GroupName="CameraRadioButton"/>
+                    <RadioButton Content="Związana z ruchomym obiektem" Checked="SetSnowflakePositionedCamera" GroupName="CameraRadioButton"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Model oświetlenia">
+                <StackPanel>
+                    <RadioButton Content="Model Blinna" GroupName="LightModelRadioButton"/>
+                    <RadioButton Content="Model Phonga" GroupName="LightModelRadioButton"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Cienowanie">
+                <StackPanel>
+                    <RadioButton Content="cieniowanie Gourauda" GroupName="ShadingRadioButton"/>
+                    <RadioButton Content="cieniowanie Phonga" GroupName="ShadingRadioButton"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
     </Grid>
 </Window>

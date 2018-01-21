@@ -20,10 +20,11 @@ namespace _3DProject
 
         private MyEngine engine;
         private List<MyMesh> meshes;
-        Camera mera = new Camera();
+        Camera camera = new Camera();
         private MyVector3[] lights;
         private int sign = 1;
-        private bool snowflakeCamera = true;
+        private bool snowflakeCamera = false;
+        private bool snowflakeTargetedCamera = false;
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -39,8 +40,7 @@ namespace _3DProject
 
             InitializeMeshes(meshes);
 
-            mera.Position = new MyVector3(0.0f, -1.0f, 12.0f);
-            mera.Target = new MyVector3(0,2,0);
+            SetDefaultCamera(new object(), null);
 
             lights = new[]
             {
@@ -74,16 +74,21 @@ namespace _3DProject
 
                     if (snowflakeCamera)
                     {
-                        var cameraPosition = mera.Position;
+                        var cameraPosition = camera.Position;
                         var xC = -sign * (float)Math.Sqrt(4 - position.Z * position.Z);
                         var zC = position.Z + (sign * 0.02f);
-                        mera.Position = new MyVector3(xC, cameraPosition.Y, zC);
+                        camera.Position = new MyVector3(xC, cameraPosition.Y, zC);
+                    }
+
+                    if (snowflakeTargetedCamera)
+                    {
+                        camera.Target = mesh.Position;
                     }
                     
                 }
             }
             
-            engine.PrepareFrame(mera, lights, meshes);
+            engine.PrepareFrame(camera, lights, meshes);
             engine.ActualizeBitmap();
         }
 
@@ -199,5 +204,27 @@ namespace _3DProject
 
         }
 
+        private void SetDefaultCamera(object sender, RoutedEventArgs e)
+        {
+            snowflakeCamera = false;
+            snowflakeTargetedCamera = false;
+
+            camera.Position = new MyVector3(0.0f, -1.0f, 12.0f);
+            camera.Target = new MyVector3(0, 2, 0);
+        }
+
+        private void SetSnowflakeTargetedCamera(object sender, RoutedEventArgs e)
+        {
+            snowflakeCamera = false;
+            snowflakeTargetedCamera = true;
+            camera.Position = new MyVector3(0.0f, -1.0f, 12.0f);
+        }
+
+        private void SetSnowflakePositionedCamera(object sender, RoutedEventArgs e)
+        {
+            snowflakeCamera = true;
+            snowflakeTargetedCamera = false;
+            camera.Target = new MyVector3(0, 2, 0);
+        }
     }
 }
