@@ -57,7 +57,6 @@ namespace _3DProject._3DObject
                     var y = (float)verticesArray[index * verticesStep + 1].Value;
                     var z = (float)verticesArray[index * verticesStep + 2].Value;
 
-                    //obliczanie normalnej samodzielne todo
                     var nx = (float)verticesArray[index * verticesStep + 3].Value;
                     var ny = (float)verticesArray[index * verticesStep + 4].Value;
                     var nz = (float)verticesArray[index * verticesStep + 5].Value;
