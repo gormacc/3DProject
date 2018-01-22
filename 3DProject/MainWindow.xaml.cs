@@ -32,7 +32,7 @@ namespace _3DProject
             engine = new MyEngine(bmp);
             FrontBuffer.Source = bmp;
 
-            meshes = ObjectLoader.LoadJSONFile("wholeScene.babylon");
+            meshes = ObjectLoader.LoadJSONFile("monkey.babylon");
             //AddGroundMesh();
             InitializeMeshes(meshes);
 
@@ -51,34 +51,34 @@ namespace _3DProject
 
             foreach (var mesh in meshes)
             {
-                if (mesh.IsRotating)
-                {
-                    mesh.Rotation = new MyVector3(mesh.Rotation.X + 0.1f, mesh.Rotation.Y + 0.1f, mesh.Rotation.Z);
+                //if (mesh.IsRotating)
+                //{
+                    mesh.Rotation = new MyVector3(mesh.Rotation.X /*+ 0.1f*/, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
 
-                    var position = mesh.Position;
-                    if (position.Z >= 3 || position.Z <= -3)
-                    {
-                        sign = -sign;
-                    }
+                    //var position = mesh.Position;
+                    //if (position.Z >= 3 || position.Z <= -3)
+                    //{
+                    //    sign = -sign;
+                    //}
 
-                    var x = -sign * (float)Math.Sqrt(9 - position.Z * position.Z);
-                    var z = position.Z + (sign * 0.03f);
-                    mesh.Position = new MyVector3(x, position.Y, z);
+                    //var x = -sign * (float)Math.Sqrt(9 - position.Z * position.Z);
+                    //var z = position.Z + (sign * 0.03f);
+                    //mesh.Position = new MyVector3(x, position.Y, z);
 
-                    if (snowflakeCamera)
-                    {
-                        var cameraPosition = camera.Position;
-                        var xC = -sign * (float)Math.Sqrt(4 - position.Z * position.Z);
-                        var zC = position.Z + (sign * 0.02f);
-                        camera.Position = new MyVector3(xC, cameraPosition.Y, zC);
-                    }
+                    //if (snowflakeCamera)
+                    //{
+                    //    var cameraPosition = camera.Position;
+                    //    var xC = -sign * (float)Math.Sqrt(4 - position.Z * position.Z);
+                    //    var zC = position.Z + (sign * 0.02f);
+                    //    camera.Position = new MyVector3(xC, cameraPosition.Y, zC);
+                    //}
 
-                    if (snowflakeTargetedCamera)
-                    {
-                        camera.Target = mesh.Position;
-                    }
+                    //if (snowflakeTargetedCamera)
+                    //{
+                    //    camera.Target = mesh.Position;
+                    //}
                     
-                }
+                //}
             }
             
             engine.PrepareFrame(camera, lights, meshes);
@@ -160,6 +160,11 @@ namespace _3DProject
                     case "Tree":
                     {
                         mesh.MeshColor = Color.FromRgb(0, 100, 0);
+                        break;
+                    }
+                    case "Suzanne":
+                    {
+                        mesh.MeshColor = Color.FromRgb(0,255,0);
                         break;
                     }
                     default:
@@ -249,23 +254,23 @@ namespace _3DProject
             snowflakeCamera = false;
             snowflakeTargetedCamera = false;
 
-            camera.Position = new MyVector3(0.0f, -1.0f, 12.0f);
-            camera.Target = new MyVector3(0, 2, 0);
+            camera.Position = new MyVector3(0.0f, 0.0f, 10.0f);
+            camera.Target = new MyVector3(0, 0, 0);
         }
 
-        private void SetSnowflakeTargetedCamera(object sender, RoutedEventArgs e)
-        {
-            snowflakeCamera = false;
-            snowflakeTargetedCamera = true;
-            camera.Position = new MyVector3(0.0f, -1.0f, 12.0f);
-        }
+        //private void SetSnowflakeTargetedCamera(object sender, RoutedEventArgs e)
+        //{
+        //    snowflakeCamera = false;
+        //    snowflakeTargetedCamera = true;
+        //    camera.Position = new MyVector3(0.0f, 0.0f, 12.0f);
+        //}
 
-        private void SetSnowflakePositionedCamera(object sender, RoutedEventArgs e)
-        {
-            snowflakeCamera = true;
-            snowflakeTargetedCamera = false;
-            camera.Target = new MyVector3(0, 2, 0);
-        }
+        //private void SetSnowflakePositionedCamera(object sender, RoutedEventArgs e)
+        //{
+        //    snowflakeCamera = true;
+        //    snowflakeTargetedCamera = false;
+        //    camera.Target = new MyVector3(0, 2, 0);
+        //}
 
         private void SetBlinnLightningModel(object sender, RoutedEventArgs e)
         {
